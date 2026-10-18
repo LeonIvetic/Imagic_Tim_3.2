@@ -71,8 +71,6 @@ Glavni modeli podataka: `User`, `Folder` (parent_id), `ImageFile` (folder_id, na
 | Frontend – radna okolina | 1–2 | stablo mapa, prikaz slike, alati |
 | Javna stranica + favoriti | 1–2 | postovi, privatno/javno, favoriti, preuzimanje |
 
-Voditelj tima dodatno vodi board, review PR-ova i komunikaciju s asistentom. Konkretna imena upisati nakon dogovora tima.
-
 ## 6. Otvorena pitanja za asistenta
 
 1. Je li potrebno **deployanje** (npr. Render/Fly/VM) ili je dovoljno lokalno pokretanje (Docker Compose)?
