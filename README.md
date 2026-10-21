@@ -72,7 +72,7 @@ cd Imagic_Tim_3.2
 
 Zadaci i nedostaci vode se u [GitHub Issues](https://github.com/LeonIvetic/Imagic_Tim_3.2/issues). Promjene koda ulaze preko Pull Requesta uz pregled najmanje jednog člana tima; svaki PR veže se na Issue. Bilješke sa sastanaka nalaze se u [docs/meeting-notes](docs/meeting-notes/).
 
-**Status licence:** [Tim treba odlučiti i navesti licencu aplikacije ili izričito navesti da nije dodijeljena.]
+**Status licence:** Nije dodijeljena
 
 Kod trećih strana, skupovi podataka, slike i ikone zadržavaju vlastite licence i uvjete uporabe.
 
@@ -80,7 +80,7 @@ Kod trećih strana, skupovi podataka, slike i ikone zadržavaju vlastite licence
 
 Ovaj projekt slijedi FER-ova [pravila o primjerenoj uporabi umjetne inteligencije](https://www.fer.unizg.hr/_download/repository/Policy%20on%20the%20appropriate%20use%20of%20artificial%20intelligence%20at%20the%20faculty%20of%20electrical%20engineering%20and%20computing%5B1%5D.pdf).
 
-**Izjava:** Za izradu nacrta strukture repozitorija i početnih dokumenata (README, `docs/`, popis početnih Issuea) korišten je alat Claude (Anthropic). [Tim treba potvrditi da je sadržaj pregledan i uskladiti ovu izjavu sa stvarnom uporabom.] Detaljan zapis nalazi se u [docs/Home.md](docs/Home.md#izjava-o-uporabi-umjetne-inteligencije).
+**Izjava:** Za izradu nacrta strukture repozitorija i početnih dokumenata (README, `docs/`, popis početnih Issuea) korišten je alat Claude (Anthropic). Detaljan zapis nalazi se u [docs/Home.md](docs/Home.md#izjava-o-uporabi-umjetne-inteligencije).
 
 ## Kodeks ponašanja i podrška
 
