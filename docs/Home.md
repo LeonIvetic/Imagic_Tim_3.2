@@ -63,7 +63,7 @@ Slijedi FER-ova [pravila o primjerenoj uporabi umjetne inteligencije](https://ww
 
 | Alat | Inačica ili model | Koristio/la | Glavna svrha |
 |------|-------------------|-------------|--------------|
-| Claude (Anthropic) | Claude Sonnet 5.5 | Leon Ivetić [potvrditi] | Nacrt strukture repozitorija, nacrt README-a i dokumenata 1 i 2, popis početnih Issuea |
+| Claude (Anthropic) | Claude Sonnet 5.5 | Leon Ivetić [potvrditi] | Nacrt strukture repozitorija |
 
 ### Opseg doprinosa umjetne inteligencije
 
