@@ -52,7 +52,7 @@ cd Imagic_Tim_3.2
 | React + JavaScript | Korisničko sučelje: radna okolina, prikaz i obrada slike, javne stranice. | Odluka tima; rad sa slikama u pregledniku. |
 | FastAPI (Python) | Poslužiteljski API: korisnici, datoteke, mape, postovi, favoriti. | Odluka tima; REST API prema frontendu. |
 | OAuth 2.0 (vanjski pružatelj) | Prijava i registracija korisnika. | Zahtjev projektnog zadatka; aplikacija ne pohranjuje lozinke. |
-| Biblioteka za obradu slika (ImageJS ili Pillow/OpenCV) | Filtri, morfologija, geometrija, segmentacija. | [Odluka čeka potvrdu asistenta: obrada u pregledniku ili na backendu.] |
+| Biblioteka za obradu slika Pillow/OpenCV | Filtri, morfologija, geometrija, segmentacija. | Obrada na backendu |
 | Baza podataka [dopuniti] | Korisnici, mape, datoteke, postovi, favoriti. | [Odluka u tijeku.] |
 | Artic API | Dohvat početnih testnih slika. | Vanjska ovisnost; aplikacija mora raditi i kad API nije dostupan. |
 
