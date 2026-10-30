@@ -9,22 +9,21 @@
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 |----|------|-----------|-------|-----------------------|
 | F-001 | Korisnici se prijavljuju i registriraju putem OAuth 2.0 pružatelja identiteta. | Visok | Odobreni zadatak | Uspješna prijava otvara radnu okolinu i javnu stranicu korisnika; pri prvoj prijavi račun se automatski stvara; odustajanje od prijave ostavlja zaštićene radnje nedostupnima. |
-| F-002 | Pri prvoj prijavi korisnik u radnoj okolini dobiva 3 rasterske slike za testiranje. | Srednji | Odobreni zadatak | Nakon prve prijave u radnoj okolini postoje 3 slike; kod sljedećih prijava se ne dupliciraju. |
-| F-003 | Korisnik može učitati (upload) i preuzeti (download) rasterske slike u najmanje 3 formata (npr. JPEG, PNG, TIF). | Visok | Odobreni zadatak | Slika u svakom od 3 formata može se učitati i pojavljuje se u radnoj okolini; preuzeta datoteka otvara se u standardnom pregledniku slika. |
-| F-004 | Radna okolina pohranjuje slike u strukturi mapa; korisnik može stvarati, preimenovati i brisati mape te imenovati i preimenovati datoteke. | Visok | Odobreni zadatak | Korisnik stvara ugniježđenu mapu, premješta u nju sliku, preimenuje mapu i datoteku; promjene su vidljive nakon ponovnog učitavanja. |
-| F-005 | Korisnik može prikazati odabranu sliku u radnoj okolini. | Visok | Odobreni zadatak | Odabirom datoteke slika se prikazuje u pregledniku slike. |
-| F-006 | Korisnik može primijeniti najmanje 5 filtara (npr. invert, grayscale, pixelate, blur, derivative). | Visok | Odobreni zadatak | Za svaki filtar vidljiv je promijenjeni rezultat na odabranoj slici. |
-| F-007 | Korisnik može primijeniti najmanje 4 morfološka operatora (erosion, dilation, opening, closing). | Visok | Odobreni zadatak | Za svaki operator vidljiv je promijenjeni rezultat na odabranoj slici. |
-| F-008 | Korisnik može primijeniti najmanje 3 geometrijske transformacije (npr. resize, rotate, flip). | Visok | Odobreni zadatak | Za svaku transformaciju rezultat odgovara zadanim parametrima (dimenzije, kut, os zrcaljenja). |
-| F-009 | Korisnik može primijeniti najmanje jedan algoritam segmentacije slike. | Visok | Odobreni zadatak | Rezultat segmentacije prikazuje se kao nova slika. |
-| F-010 | Rezultat obrade korisnik sprema kao novu datoteku ili prepisuje izvornu. | Visok | Odobreni zadatak | Nakon spremanja kao nova datoteka postoje original i rezultat; nakon prepisivanja postoji samo izmijenjena datoteka. |
-| F-011 | Korisnik ima javnu stranicu s korisničkim imenom, slikom i kratkim opisom koje samo on može uređivati. | Visok | Odobreni zadatak | Vlasnik može urediti podatke; drugi korisnici ih vide, ali ne mogu mijenjati. |
-| F-012 | Korisnik može dodavati, uređivati i brisati postove (rasterska slika s tekstualnim opisom) na svojoj javnoj stranici. | Visok | Odobreni zadatak | Novi post prikazuje se na stranici; nakon uređivanja prikazuje novi sadržaj; nakon brisanja više nije vidljiv. |
-| F-013 | Korisnik može označiti svaki post kao privatan ili javan. | Visok | Odobreni zadatak | Privatni post vidljiv je samo vlasniku; javni post vide svi prijavljeni korisnici. |
-| F-014 | Prijavljeni korisnici mogu pregledavati javne stranice drugih korisnika. | Visok | Odobreni zadatak | Prijavljeni korisnik otvara tuđu javnu stranicu i vidi samo javne postove. |
-| F-015 | Korisnik može dodati u favorite pojedini post ili cijelu javnu stranicu drugog korisnika. | Srednji | Odobreni zadatak | Odabrani post ili stranica pojavljuje se na popisu favorita i može se ukloniti. |
-| F-016 | Korisnik može sliku s tuđe javne stranice preuzeti lokalno ili dodati u svoju radnu okolinu. | Srednji | Odobreni zadatak | Preuzeta slika otvara se lokalno; dodana slika pojavljuje se u radnoj okolini korisnika. |
-| F-017 | Radna okolina je privatna: njezin sadržaj vidljiv je samo vlasniku. | Visok | Odobreni zadatak | Drugi prijavljeni korisnik ne može dohvatiti slike ni mape tuđe radne okoline. |
+| F-002 | Korisnik može učitati (upload) i preuzeti (download) rasterske slike u najmanje 3 formata (npr. JPEG, PNG, TIF). | Visok | Odobreni zadatak | Slika u svakom od 3 formata može se učitati i pojavljuje se u radnoj okolini; preuzeta datoteka otvara se u standardnom pregledniku slika. |
+| F-003 | Radna okolina pohranjuje slike u strukturi mapa; korisnik može stvarati, preimenovati i brisati mape te imenovati i preimenovati datoteke. | Visok | Odobreni zadatak | Korisnik stvara ugniježđenu mapu, premješta u nju sliku, preimenuje mapu i datoteku; promjene su vidljive nakon ponovnog učitavanja. |
+| F-004 | Korisnik može prikazati odabranu sliku u radnoj okolini. | Visok | Odobreni zadatak | Odabirom datoteke slika se prikazuje u pregledniku slike. |
+| F-005 | Korisnik može primijeniti najmanje 5 filtara (npr. invert, grayscale, pixelate, blur, derivative). | Visok | Odobreni zadatak | Za svaki filtar vidljiv je promijenjeni rezultat na odabranoj slici. |
+| F-006 | Korisnik može primijeniti najmanje 4 morfološka operatora (erosion, dilation, opening, closing). | Visok | Odobreni zadatak | Za svaki operator vidljiv je promijenjeni rezultat na odabranoj slici. |
+| F-007 | Korisnik može primijeniti najmanje 3 geometrijske transformacije (npr. resize, rotate, flip). | Visok | Odobreni zadatak | Za svaku transformaciju rezultat odgovara zadanim parametrima (dimenzije, kut, os zrcaljenja). |
+| F-008 | Korisnik može primijeniti najmanje jedan algoritam segmentacije slike. | Visok | Odobreni zadatak | Rezultat segmentacije prikazuje se kao nova slika. |
+| F-009 | Rezultat obrade korisnik sprema kao novu datoteku ili prepisuje izvornu. | Visok | Odobreni zadatak | Nakon spremanja kao nova datoteka postoje original i rezultat; nakon prepisivanja postoji samo izmijenjena datoteka. |
+| F-010 | Korisnik ima javnu stranicu s korisničkim imenom, slikom i kratkim opisom koje samo on može uređivati. | Visok | Odobreni zadatak | Vlasnik može urediti podatke; drugi korisnici ih vide, ali ne mogu mijenjati. |
+| F-011 | Korisnik može dodavati, uređivati i brisati postove (rasterska slika s tekstualnim opisom) na svojoj javnoj stranici. | Visok | Odobreni zadatak | Novi post prikazuje se na stranici; nakon uređivanja prikazuje novi sadržaj; nakon brisanja više nije vidljiv. |
+| F-012 | Korisnik može označiti svaki post kao privatan ili javan. | Visok | Odobreni zadatak | Privatni post vidljiv je samo vlasniku; javni post vide svi prijavljeni korisnici. |
+| F-013 | Prijavljeni korisnici mogu pregledavati javne stranice drugih korisnika. | Visok | Odobreni zadatak | Prijavljeni korisnik otvara tuđu javnu stranicu i vidi samo javne postove. |
+| F-014 | Korisnik može dodati u favorite pojedini post ili cijelu javnu stranicu drugog korisnika. | Srednji | Odobreni zadatak | Odabrani post ili stranica pojavljuje se na popisu favorita i može se ukloniti. |
+| F-015 | Korisnik može sliku s tuđe javne stranice preuzeti lokalno ili dodati u svoju radnu okolinu. | Srednji | Odobreni zadatak | Preuzeta slika otvara se lokalno; dodana slika pojavljuje se u radnoj okolini korisnika. |
+| F-016 | Radna okolina je privatna: njezin sadržaj vidljiv je samo vlasniku. | Visok | Odobreni zadatak | Drugi prijavljeni korisnik ne može dohvatiti slike ni mape tuđe radne okoline. |
 
 ## 2.2 Nefunkcijski zahtjevi
 
@@ -39,6 +38,7 @@
 | NF-05 | Učitane datoteke validiraju se po tipu i veličini; nepodržani formati odbijaju se uz razumljivu poruku. | Srednji | Procjena tima | Testni scenarij: upload nepodržane i prevelike datoteke. |
 | NF-06 | Tajne (OAuth ključevi, pristupni podaci) ne nalaze se u repozitoriju, već u varijablama okruženja. | Visok | Pravila kolegija | Pregled repozitorija; postoji `.env.example` bez stvarnih vrijednosti. |
 | NF-07 | Izvorni kod održava se na GitHubu uz Pull Requeste, Issues i verzioniranje. | Srednji | Pravila kolegija | Pregled povijesti repozitorija. |
+| NF-08 | Web aplikacija mora biti responzivna, tj. prilagoditi raspored i veličinu elemenata različitim dimenzijama zaslona (mobitel, tablet, desktop - minimalna širina 360px) bez horizontalnog skrolanja i gubitka funkcionalnosti. | Srednji | Procjena tima | Ručno testiranje u Chrome DevTools na različitim širinama ekrana. |
 
 ## 2.3 Dionici i akteri
 
@@ -73,7 +73,7 @@
 
 | Datum | ID zahtjeva | Promjena i razlog | Dogovoreno s / dokaz |
 |-------|-------------|-------------------|----------------------|
-| | | | |
+| 30.10.2026. | NF-08 | Dodan novi nefunkcijski zahtjev za responzivnost stranice. Razlog: Korisnici će aplikaciji pristupati s različitih uređaja, a zadatak ne propisuje podržane veličine zaslona, pa ih je tim definirao. | Dogovor s asistentom na vježbi 26.10. |
 
 ## 2.6 Sljedivost zahtjeva
 

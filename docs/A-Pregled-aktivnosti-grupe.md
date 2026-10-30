@@ -15,6 +15,13 @@ Bilješke se nalaze u [meeting-notes](meeting-notes/).
 | Član | Doprinos |
 |------|----------|
 | Leon Ivetić | [dopuniti] |
+| Feđa Mitić | [dopuniti] |
+| Roko Vrdoljak | [dopuniti] |
+| Florijan Blažeka | [dopuniti] |
+| Alan Ivanković | [dopuniti] |
+| Lorena Ivanković | [dopuniti] |
+| Mihaela Miljavac | [dopuniti] |
+
 
 ## A.3 Izazovi
 
