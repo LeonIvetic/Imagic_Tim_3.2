@@ -49,8 +49,6 @@
 | A-01 Neprijavljeni posjetitelj | Akter: može pokrenuti prijavu putem OAuth-a; nema pristup ostalim sadržajima. | F-001 |
 | A-02 Prijavljeni korisnik | Akter: koristi radnu okolinu, obrađuje slike, uređuje svoju javnu stranicu i postove. | F-002 – F-013, F-017 |
 | A-03 Prijavljeni korisnik kao posjetitelj | Akter: pregledava tuđe javne stranice, dodaje favorite, preuzima slike. | F-014, F-015, F-016 |
-| S-01 OAuth 2.0 pružatelj identiteta | Vanjski sustav: provodi autentifikaciju. | F-001, NF-01 |
-| S-02 Artic API | Vanjski sustav: izvor početnih testnih slika. | F-002 |
 | D-01 Nositelj kolegija i asistent | Dionici (nisu akteri): zadaju opseg i ocjenjuju rad. | Cijeli opseg |
 
 ## 2.4 Ograničenja i pretpostavke
