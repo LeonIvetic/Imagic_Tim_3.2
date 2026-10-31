@@ -61,11 +61,11 @@ npm run dev
 
 | Tehnologija ili alat | Uloga u ovom projektu | Razlog uporabe ili važno ograničenje |
 |----------------------|-----------------------|--------------------------------------|
-| React + JavaScript | Korisničko sučelje: radna okolina, prikaz i obrada slike, javne stranice. | Odluka tima; rad sa slikama u pregledniku. |
+| React + JavaScript | Korisničko sučelje: radna okolina, prikaz slike i alati za obradu, javne stranice. | Odluka tima; SPA koja komunicira s backendom preko REST API-ja. |
 | FastAPI (Python) | Poslužiteljski API: korisnici, datoteke, mape, postovi, favoriti. | Odluka tima; REST API prema frontendu. |
-| OAuth 2.0 (vanjski pružatelj) | Prijava i registracija korisnika. | Zahtjev projektnog zadatka; aplikacija ne pohranjuje lozinke. |
-| Biblioteka za obradu slika Pillow/OpenCV | Filtri, morfologija, geometrija, segmentacija. | Obrada na backendu |
-| Baza podataka [dopuniti] | Korisnici, mape, datoteke, postovi, favoriti. | [Odluka u tijeku.] |
+| Auth0 (OAuth 2.0) | Prijava i registracija korisnika. | Zahtjev projektnog zadatka; aplikacija ne pohranjuje lozinke. |
+| Pillow/OpenCV | Filtri, morfologija, geometrija, segmentacija. | Odluka tima; obrada slika izvodi se na backendu. |
+| PostgreSQL | Korisnici, mape, datoteke, postovi, favoriti. | Odluka tima; relacijska baza za povezane podatke korisnika. |
 | Artic API | Dohvat početnih testnih slika. | Vanjska ovisnost; aplikacija mora raditi i kad API nije dostupan. |
 
 ## Članovi tima

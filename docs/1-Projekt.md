@@ -27,7 +27,7 @@ Osnovnu obradu rasterskih slika (filtri, geometrijske transformacije, morfološk
 
 **Izvan opsega ili odgođeno:** Obrada vektorske grafike, komentari i lajkovi, pretraživanje korisnika, undo/redo te dodatni filtri i operatori iznad minimuma. Odgođeno zbog ograničenog vremena semestra; moguće kao budući rad ako ostane kapaciteta.
 
-**Vanjske ovisnosti:** OAuth 2.0 pružatelj identiteta (npr. Google ili GitHub); Artic API (Art Institute of Chicago) za dohvat početnih testnih slika; biblioteka za obradu slika (ImageJS u pregledniku ili Pillow/OpenCV na backendu, odluka čeka potvrdu asistenta).
+**Vanjske ovisnosti:** Auth0 kao pružatelj identiteta (OAuth 2.0); Artic API (Art Institute of Chicago) za dohvat početnih testnih slika; biblioteke Pillow/OpenCV za obradu slika na backendu.
 
 ## 1.4 Postojeći pristupi i opravdanost projekta
 

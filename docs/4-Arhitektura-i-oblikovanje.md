@@ -2,15 +2,13 @@
 
 **Cilj:** Opisati glavne odluke oblikovanja, strukturu sustava, podatke i ponašanje.
 
-> Radna skica; konačne odluke bit će zabilježene nakon razgovora s asistentom.
-
 ## 4.1 Pregled arhitekture
 
 ```
-React SPA  <--REST/JSON-->  FastAPI  <-->  baza podataka
+React SPA  <--REST/JSON-->  FastAPI  <-->  PostgreSQL
                                |
                                +--> pohrana datoteka (slike)
-                               +--> OAuth 2.0 pružatelj, Artic API
+                               +--> Auth0 (OAuth 2.0), Artic API
 ```
 
 ## 4.2 Odluke oblikovanja
@@ -19,8 +17,9 @@ React SPA  <--REST/JSON-->  FastAPI  <-->  baza podataka
 |--------|--------|--------|
 | React + JavaScript (frontend) | Donesena | Odluka tima |
 | FastAPI (backend) | Donesena | Odluka tima |
-| Mjesto obrade slika (preglednik ili backend) | Otvorena | Čeka potvrdu asistenta |
-| Baza podataka | Otvorena | [Dopuniti] |
+| Obrada slika na backendu (Pillow/OpenCV) | Donesena | Odluka tima (31.10.); jedna implementacija alata, neovisna o pregledniku |
+| PostgreSQL (baza podataka) | Donesena | Odluka tima (31.10.); relacijski podaci (korisnici, mape, datoteke, postovi, favoriti) |
+| Auth0 (OAuth 2.0) za prijavu | Donesena | Odluka tima (31.10.); aplikacija ne pohranjuje lozinke |
 
 ## 4.3 Model podataka (nacrt)
 

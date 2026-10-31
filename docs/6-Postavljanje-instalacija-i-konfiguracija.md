@@ -64,7 +64,7 @@ Varijable okruženja navode se u `backend/.env.example` (bez stvarnih vrijednost
 |---|---|---|
 | `FRONTEND_URL` | Adresa frontenda kojoj backend dopušta pozive (CORS) | `http://localhost:5173` |
 
-[Dopuniti s uvođenjem baze i OAuth prijave, npr. adresa baze, OAuth client ID i secret.]
+[Dopuniti s uvođenjem baze (PostgreSQL) i prijave (Auth0): adresa baze te Auth0 domena, client ID i secret.]
 
 ## 6.3 Javno postavljanje
 

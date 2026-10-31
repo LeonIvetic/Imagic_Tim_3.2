@@ -43,10 +43,10 @@ Dodatni filtri/operatori, undo/redo, pretraživanje korisnika, lajkovi/komentari
 |---|---|
 | Frontend | React + JavaScript |
 | Backend | FastAPI (Python) |
-| Autentifikacija | OAuth 2.0 (npr. Authlib na backendu) |
-| Obrada slika | image-js (ImageJS) u pregledniku **ili** Pillow/OpenCV/scikit-image na backendu – *vidi otvorena pitanja* |
+| Autentifikacija | Auth0 (OAuth 2.0) |
+| Obrada slika | Pillow/OpenCV na backendu |
 | Dohvat slika | Art Institute of Chicago (Artic) API za početne testne slike |
-| Baza | PostgreSQL (prijedlog; SQLite za razvoj) |
+| Baza | PostgreSQL |
 | Pohrana datoteka | Disk/volumen na poslužitelju ili S3-kompatibilna pohrana |
 | Verzioniranje | GitHub, grane + Pull Requesti, Issues, Projects board |
 
@@ -56,7 +56,7 @@ Dodatni filtri/operatori, undo/redo, pretraživanje korisnika, lajkovi/komentari
 React SPA  <--REST/JSON-->  FastAPI  <-->  PostgreSQL (korisnici, mape, datoteke, postovi, favoriti)
                                |
                                +--> pohrana datoteka (slike)
-                               +--> OAuth 2.0 pružatelji, Artic API
+                               +--> Auth0 (OAuth 2.0), Artic API
 ```
 
 Glavni modeli podataka: `User`, `Folder` (parent_id), `ImageFile` (folder_id, naziv, format, putanja), `Post` (user_id, image_id, tekst, is_public), `FavoritePost`, `FavoriteProfile`.

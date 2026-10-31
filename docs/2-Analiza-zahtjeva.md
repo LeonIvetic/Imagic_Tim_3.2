@@ -60,11 +60,11 @@
 | ID | Tip | Opis ograničenja ili pretpostavke | Izvor | Inženjerska posljedica / Provjera |
 |----|-----|-----------------------------------|-------|-----------------------------------|
 | C-01 | Ograničenje | Prijava i registracija moraju se ostvariti vanjskim servisima za autentifikaciju putem OAuth 2.0. | Zadatak | Autentifikacija se projektira oko odabranog pružatelja; nema lokalnih lozinki. |
-| C-02 | Ograničenje | Tim koristi React + JavaScript za frontend i FastAPI (Python) za backend. | Odluka tima | Komunikacija preko REST API-ja; obrada slike na backendu ili u pregledniku ovisi o odluci (vidi AS-01). |
+| C-02 | Ograničenje | Tim koristi React + JavaScript za frontend i FastAPI (Python) za backend. | Odluka tima | Komunikacija preko REST API-ja; obrada slike izvodi se na backendu (vidi AS-01). |
 | C-03 | Ograničenje | Radna okolina je privatna, a javna stranica vidljiva svim prijavljenim korisnicima i uređuje je samo vlasnik. | Zadatak | Provjera vlasništva na svakom zahtjevu. |
 | C-04 | Ograničenje | Minimalni opseg obrade: 5 filtara, 4 morfološka operatora, 3 geometrijske transformacije, 1 algoritam segmentacije; najmanje 3 formata datoteka. | Zadatak | Ostvariti sve navedene alate; provjeriti u ispitivanju. |
-| AS-01 | Pretpostavka | Obrada slika smije se izvoditi na backendu (Pillow/OpenCV) ili u pregledniku (ImageJS). | Procjena tima | Potvrditi s asistentom na vježbi 26.10.; odluka se bilježi u 2.5. |
-| AS-02 | Pretpostavka | Za prijavu je dovoljan jedan OAuth pružatelj. | Procjena tima | Potvrditi s asistentom. |
+| AS-01 | Pretpostavka | Obrada slika izvodi se na backendu (Pillow/OpenCV). | Odluka tima | Odluka zabilježena u 2.5 i docs/4. |
+| AS-02 | Pretpostavka | Za prijavu je dovoljan jedan pružatelj identiteta; tim koristi Auth0 (OAuth 2.0). | Odluka tima | Odluka zabilježena u 2.5 i docs/4. |
 | AS-03 | Pretpostavka | Artic API dostupan je za dohvat početnih slika; ako nije, koriste se ugrađene slike. | Procjena tima | Provjeriti dostupnost pri implementaciji; predvidjeti rezervno rješenje. |
 
 ## 2.5 Značajne promjene zahtjeva
@@ -74,6 +74,8 @@
 | Datum | ID zahtjeva | Promjena i razlog | Dogovoreno s / dokaz |
 |-------|-------------|-------------------|----------------------|
 | 30.10.2026. | NF-08 | Dodan novi nefunkcijski zahtjev za responzivnost stranice. Razlog: Korisnici će aplikaciji pristupati s različitih uređaja, a zadatak ne propisuje podržane veličine zaslona, pa ih je tim definirao. | Dogovor s asistentom na vježbi 26.10. |
+| 31.10.2026. | AS-01, C-02 | Obrada slika izvodi se na backendu (Pillow/OpenCV). Razlog: jedna implementacija alata na poslužitelju, neovisna o pregledniku. | Odluka tima ([sastanak 31.10.](meeting-notes/2026-10-31-tjedan-5.md)) |
+| 31.10.2026. | AS-02, F-001 | Za prijavu se koristi Auth0 (OAuth 2.0), a za pohranu podataka PostgreSQL. | Odluka tima ([sastanak 31.10.](meeting-notes/2026-10-31-tjedan-5.md)) |
 
 ## 2.6 Sljedivost zahtjeva
 
