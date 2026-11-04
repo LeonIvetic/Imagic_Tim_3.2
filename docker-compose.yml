@@ -1,0 +1,14 @@
+   services:
+     db:
+       image: postgres:16
+       environment:
+         POSTGRES_USER: imagic
+         POSTGRES_PASSWORD: imagic   
+         POSTGRES_DB: imagic
+       ports:
+         - "5433:5432"
+       volumes:
+         - pgdata:/var/lib/postgresql/data
+
+   volumes:
+     pgdata:
