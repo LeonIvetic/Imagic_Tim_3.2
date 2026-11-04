@@ -69,3 +69,14 @@ Varijable okruženja navode se u `backend/.env.example` (bez stvarnih vrijednost
 ## 6.3 Javno postavljanje
 
 [Dopuniti nakon dogovora s asistentom o platformi.]
+
+## 6.4 Pokretanje baze
+
+Instaliraj Docker (Docker Desktop na Windowsu/Macu).
+U korijenu repozitorija: `docker compose up -d`
+`cd backend`, aktiviraj virtualno okruženje i `pip install -r requirements.txt`
+Kopiraj `.env.example` u `.env` (`cp .env.example .env`)
+`alembic upgrade head`
+Provjera: `docker compose exec db psql -U imagic -d imagic -c "\d users"`
+
+Zaustavljanje: `docker compose down` (podaci ostaju). Brisanje i podataka: `docker compose down -v`.
