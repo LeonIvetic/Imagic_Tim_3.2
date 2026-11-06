@@ -64,6 +64,7 @@ Slijedi FER-ova [pravila o primjerenoj uporabi umjetne inteligencije](https://ww
 | Alat | Inačica ili model | Koristio/la | Glavna svrha |
 |------|-------------------|-------------|--------------|
 | Claude (Anthropic) | Claude Sonnet 5.5 | Leon Ivetić [potvrditi] | Nacrt strukture repozitorija |
+| Claude (Anthropic) | Claude Opus 5.5 (Claude Code) | Leon Ivetić | Izrada CSS-a i izgleda početne (login) stranice frontenda |
 
 ### Opseg doprinosa umjetne inteligencije
 
@@ -71,6 +72,7 @@ Slijedi FER-ova [pravila o primjerenoj uporabi umjetne inteligencije](https://ww
 |---------------------------------|--------------|----------------------|-------------------------------|----------|
 | README.md, docs/Home.md | Izrada nacrta | Prvu inačicu teksta prema predlošku | Tim je zadao projektni zadatak i naziv tima; [dopuniti što je tim izmijenio] | Repozitorij |
 | docs/1-Projekt.md, docs/2-Analiza-zahtjeva.md | Izrada nacrta | Zahtjeve izvedene iz projektnog zadatka | [dopuniti što je tim ispravio ili dodao] | Repozitorij |
+| `frontend/src/index.css`, `frontend/src/App.css`, fontovi u `frontend/index.html` | Generiranje koda | CSS stilove (paleta boja, tipografija, gumbi, login stranica, responzivnost) | Leon Ivetić zadao upute te popravio greške | Commit `1e0b44d` |
 
 Stranice i artefakti koji nisu navedeni iznad izrađeni su bez pomoći generativne umjetne inteligencije. [Ažurirati prema stvarnoj uporabi.]
 
