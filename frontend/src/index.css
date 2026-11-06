@@ -1,0 +1,112 @@
+/* Globalni stilovi i boje (design tokens) za cijelu aplikaciju. */
+
+:root {
+  /* Narančasta paleta */
+  --orange-50: #fff7f0;
+  --orange-100: #ffeadb;
+  --orange-200: #ffd2b0;
+  --orange-300: #ffb27a;
+  --orange-400: #ff8f45;
+  --orange-500: #f97316;
+  --orange-600: #e35d0b;
+  --orange-700: #b9470a;
+  --orange-900: #5c2405;
+
+  /* Neutralne (tople) */
+  --white: #ffffff;
+  --cream: #fffaf5;
+  --ink: #1f1510;
+  --ink-soft: #5b4a40;
+  --ink-muted: #8e7c71;
+  --line: #f0e3d8;
+
+  --danger: #c2410c;
+  --danger-bg: #fff1eb;
+  --success: #15803d;
+
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 28px;
+
+  --shadow-sm: 0 1px 2px rgb(92 36 5 / 0.06);
+  --shadow: 0 10px 30px -12px rgb(92 36 5 / 0.18), 0 2px 6px rgb(92 36 5 / 0.05);
+  --shadow-lg: 0 30px 60px -20px rgb(92 36 5 / 0.35);
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: light;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--cream);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--cream);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+}
+
+code {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.875em;
+  padding: 0.1em 0.4em;
+  border-radius: 6px;
+  background: var(--orange-50);
+  color: var(--orange-700);
+}
+
+::selection {
+  background: var(--orange-200);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--orange-300);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

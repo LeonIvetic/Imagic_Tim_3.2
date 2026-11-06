@@ -7,11 +7,17 @@ import { LoginButton } from './AuthButtons.jsx'
 export default function RequireAuth({ children }) {
   const { isLoading, isAuthenticated } = useAuth0()
 
-  if (isLoading) return <p>Učitavanje...</p>
+  if (isLoading) {
+    return (
+      <div className="state">
+        <span className="spinner" aria-label="Učitavanje" />
+      </div>
+    )
+  }
 
   if (!isAuthenticated) {
     return (
-      <div>
+      <div className="state">
         <p>Za ovu stranicu moraš biti prijavljen.</p>
         <LoginButton />
       </div>
