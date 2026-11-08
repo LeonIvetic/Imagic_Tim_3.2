@@ -2,8 +2,6 @@
 
 **Cilj:** Opisati aktere i reprezentativne interakcije korisnika sa sustavom.
 
->UML dijagrami izrađuju se u PlantUML-u (izvor `.puml` + slika).
-
 ## 3.1 Akteri
 
 Vidi [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-akteri).
@@ -242,3 +240,10 @@ A4 – Dodavanje slike u vlastitu radnu okolinu
 - nakon uspješnog preuzimanja korisnik ima lokalnu kopiju slike
 - nakon uspješnog dodavanja u radnu okolinu korisnik ima vlastitu kopiju slike u svojoj privatnoj radnoj okolini
 - sadržaj izvornog posta i stranice drugog korisnika ostaje nepromijenjen
+
+
+## Dijagram obrazaca uporabe
+
+![Dijagram obrazaca uporabe](obrasci-uporabe.png)
+
+[PlantUML izvor](obrasci-uporabe.puml)
