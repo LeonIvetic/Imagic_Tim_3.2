@@ -32,30 +32,37 @@ Vodič: [Postavljanje, instalacija i konfiguracija](docs/6-Postavljanje-instalac
 
 ## Brzi početak / instalacija
 
-**Preduvjeti:** Python 3.12 s [uv](https://docs.astral.sh/uv/) (ili `python3-venv` i `pip`), Node.js 22 s npm-om. Detalji i česte greške: [vodič za instalaciju](docs/6-Postavljanje-instalacija-i-konfiguracija.md#61-lokalna-instalacija).
+**Preduvjeti:** Python 3.12 s [uv](https://docs.astral.sh/uv/) (ili `python3-venv` i `pip`), Node.js 22 s npm-om, Docker. Detalji i česte greške: [vodič za instalaciju](docs/6-Postavljanje-instalacija-i-konfiguracija.md#61-lokalna-instalacija).
 
 ```bash
 git clone https://github.com/LeonIvetic/Imagic_Tim_3.2.git
 cd Imagic_Tim_3.2
 
+# Baza (iz korijena repozitorija)
+docker compose up -d
+
 # Backend (terminal 1)
 cd backend
 uv venv .venv && source .venv/bin/activate   # ili: python3 -m venv .venv
 uv pip install -r requirements.txt           # ili: pip install -r requirements.txt
-cp .env.example .env
+cp .env.example .env                         # samo prvi put
+alembic upgrade head                         # stvara/ažurira tablice
 python -m app.main
 
 # Frontend (terminal 2, iz korijena repozitorija)
 cd frontend
 npm install
+cp .env.example .env                         # samo prvi put
 npm run dev
 ```
+
+Nakon svake promjene u `.env` server treba ponovno pokrenuti jer se `.env` čita samo pri pokretanju.
 
 **Adresa:** frontend <http://localhost:5173>, backend <http://localhost:8000>.
 
 **Provjera:** <http://localhost:8000/api/health> vraća `{"status":"ok"}`; dokumentacija API-ja je na <http://localhost:8000/docs>.
 
-**Konfiguracija:** Varijable okruženja navedene su u `backend/.env.example`; svaki član kopira ga u vlastiti `backend/.env`. Stvarne vrijednosti (npr. OAuth ključevi) nikada se ne objavljuju u repozitoriju.
+**Konfiguracija:** Backend i frontend imaju svaki svoju datoteku s varijablama okruženja: `backend/.env.example` i `frontend/.env.example`. Svaki član ih kopira u vlastite `backend/.env` i `frontend/.env`, koje Git ignorira. Tajne vrijednosti nikada se ne objavljuju u repozitoriju. Popis varijabli nalazi se u [docs/6.2](docs/6-Postavljanje-instalacija-i-konfiguracija.md#62-konfiguracija).
 
 ## Tehnologije
 
