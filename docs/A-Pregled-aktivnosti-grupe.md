@@ -9,6 +9,7 @@ Bilješke se nalaze u [meeting-notes](meeting-notes/).
 | Datum | Tema | Bilješke |
 |-------|------|----------|
 | 2026-10-26 | Laboratorijska vježba 1 (prezentacija zahtjeva) | [dopuniti nakon vježbe] |
+| 2026-11-09 | Dogovor za 6. tjedan (klikabilni prototip) | [bilješke](meeting-notes/2026-11-09-tjedan-6.md) |
 
 ## A.2 Doprinosi članova
 
