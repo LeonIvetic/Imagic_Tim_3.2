@@ -175,7 +175,7 @@ function MeTest() {
   async function callMe() {
     setLoading(true)
     try {
-      setResult({ ok: true, data: await apiFetch('/api/me') })
+      setResult({ ok: true, data: await apiFetch('/api/users/me') })
     } catch (err) {
       setResult({ ok: false, data: { error: err.message } })
     } finally {
@@ -189,7 +189,7 @@ function MeTest() {
         <div>
           <h2>Test veze s backendom</h2>
           <p>
-            Šalje <code>GET /api/me</code> s access tokenom.
+            Šalje <code>GET /api/users/me</code> s access tokenom.
           </p>
         </div>
         <button type="button" className="btn btn--primary" onClick={callMe} disabled={loading}>

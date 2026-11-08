@@ -6,7 +6,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 // Hook koji vraća fetch funkciju koja automatski dodaje access token.
 // Primjer:
 //   const apiFetch = useApiFetch()
-//   const me = await apiFetch('/api/me')
+//   const me = await apiFetch('/api/users/me')
 //   await apiFetch('/api/posts', { method: 'POST', body: JSON.stringify(data) })
 export function useApiFetch() {
   const { getAccessTokenSilently } = useAuth0()
