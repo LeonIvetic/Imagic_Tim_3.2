@@ -33,7 +33,7 @@ Tumač oznaka: `*` ispred atributa označava obvezan atribut (`NOT NULL`), a atr
 
 Napomena: Entiteti su u dijagramu imenovani u jednini, jednako kao klase u kodu (npr. `User`). U bazi podataka odgovarajuće tablice imaju naziv u množini (npr. `users`), a u tablici ispod navedeno je koja tablica odgovara kojem entitetu. Naziv `user` nije korišten za tablicu jer je to rezervirana riječ u PostgreSQL-u.
 
-Opis entiteta:
+**Opis entiteta**
 
 | Entitet | Tablica u bazi | Što pohranjuje | Zahtjevi |
 |---|---|---|---|
@@ -44,7 +44,7 @@ Opis entiteta:
 | `FavoritePost` | `favorite_posts` | Objave koje je korisnik dodao u favorite. Par (`user_id`, `post_id`) je primarni ključ, pa se ista objava ne može dodati dvaput. | F-014 |
 | `FavoriteProfile` | `favorite_profiles` | Javne stranice drugih korisnika koje je korisnik dodao u favorite. `user_id` je korisnik koji dodaje, a `profile_user_id` vlasnik stranice. | F-014 |
 
-Veze
+**Veze**
 
 | Veza | Kardinalnost | Atribut |
 |---|---|---|
@@ -56,7 +56,7 @@ Veze
 | `User` dodaje u favorite `Post` | N : M | entitet `FavoritePost` (tablica `favorite_posts`) |
 | `User` dodaje u favorite `User` (stranicu) | N : M | entitet `FavoriteProfile` (tablica `favorite_profiles`) |
 
-Odluke o modelu
+**Odluke o modelu**
 
 | Pitanje | Odluka | Razlog |
 |---|---|---|
@@ -71,7 +71,7 @@ Odluke o modelu
 | Kako se bilježi izmjena? | `ImageFile` i `Post` imaju `updated_at`, koji se postavlja pri svakoj izmjeni preko aplikacije. | Prepisivanje izvorne slike (F-009) i uređivanje objave (F-011) mijenjaju postojeće zapise. |
 | Postoje li tablice za lozinke ili sesije? | Ne. | Prijavu obavlja Auth0, a backend provjerava izdani token (NF-01). |
 
-Ograničenja koja dijagram ne prikazuje
+**Ograničenja koja dijagram ne prikazuje**
 
 - `User`: `auth0_sub` je jedinstven; `username` je jedinstven (smije biti prazan).
 - `Folder`: jedinstveno ime mape unutar roditelja; točno jedna korijenska mapa po korisniku; mapa nije sama sebi roditelj. Backend osigurava da roditeljska mapa pripada istom korisniku i sprječava premještanje mape u vlastitu podmapu.
@@ -79,7 +79,7 @@ Ograničenja koja dijagram ne prikazuje
 - `Post`: `is_public` je zadano `false`; autor objave mora biti vlasnik slike (provjerava backend).
 - `FavoritePost` i `FavoriteProfile`: složeni primarni ključ; korisnik ne može favorizirati sam sebe.
 
-Pravila brisanja
+**Pravila brisanja**
 
 - Brisanje korisnika briše njegove mape, slike, objave i favorite te zapise u kojima je on favorizirana stranica.
 - Brisanje mape briše podmape i zapise slika u njoj.
