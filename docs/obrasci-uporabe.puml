@@ -1,0 +1,30 @@
+@startuml
+left to right direction
+
+actor "A-01\nNeprijavljeni posjetitelj" as A1
+actor "A-02\nPrijavljeni korisnik" as A2
+actor "A-03\nPrijavljeni korisnik\nkao posjetitelj" as A3
+
+actor "Auth0" as Auth0 <<sustav>>
+actor "Artic API" as Artic <<sustav>>
+
+rectangle "Imagic" {
+    usecase "UC-001\nPrijava" as UC1
+    usecase "UC-002\nUpload i organizacija slika" as UC2
+    usecase "UC-003\nObrada slike" as UC3
+    usecase "UC-004\nObjava posta" as UC4
+    usecase "UC-005\nPregled i favoriti" as UC5
+}
+
+A1 -- UC1
+
+A2 -- UC2
+A2 -- UC3
+A2 -- UC4
+
+A3 -- UC5
+
+UC1 -- Auth0
+UC1 -- Artic
+
+@enduml

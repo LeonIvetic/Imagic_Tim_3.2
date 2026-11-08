@@ -47,8 +47,8 @@
 | ID uloge ili aktera | Odnos prema sustavu | Relevantni zahtjevi |
 |---------------------|---------------------|---------------------|
 | A-01 Neprijavljeni posjetitelj | Akter: može pokrenuti prijavu putem OAuth-a; nema pristup ostalim sadržajima. | F-001 |
-| A-02 Prijavljeni korisnik | Akter: koristi radnu okolinu, obrađuje slike, uređuje svoju javnu stranicu i postove. | F-002 – F-013, F-017 |
-| A-03 Prijavljeni korisnik kao posjetitelj | Akter: pregledava tuđe javne stranice, dodaje favorite, preuzima slike. | F-014, F-015, F-016 |
+| A-02 Prijavljeni korisnik | Akter: koristi radnu okolinu, obrađuje slike, uređuje svoju javnu stranicu i postove. | F-002 – F-012, F-016 |
+| A-03 Prijavljeni korisnik kao posjetitelj | Akter: pregledava tuđe javne stranice, dodaje favorite, preuzima slike. | F-013 – F-015 |
 | D-01 Nositelj kolegija i asistent | Dionici (nisu akteri): zadaju opseg i ocjenjuju rad. | Cijeli opseg |
 
 ## 2.4 Ograničenja i pretpostavke
@@ -81,10 +81,14 @@
 
 | ID zahtjeva | Obrazac uporabe / modul | Arhitekturna realizacija | Ispitivanje ili provjera |
 |-------------|-------------------------|--------------------------|--------------------------|
-| F-001 | UC-001 (na čekanju) | Modul za autentifikaciju | na čekanju |
-| F-003 | UC-002 (na čekanju) | API za datoteke | na čekanju |
-| F-006 – F-009 | UC-003 (na čekanju) | Modul za obradu slika | na čekanju |
-| F-012 | UC-004 (na čekanju) | API za postove | na čekanju |
+| F-001 | UC-001 | Modul za autentifikaciju | na čekanju |
+| F-002 – F-004 | UC-002 | Radna okolina i API za datoteke i mape | na čekanju |
+| F-005 – F-009 | UC-003 | Modul za obradu slika i API za datoteke | na čekanju |
+| F-010 | UC-004 | Modul za korisničke profile | na čekanju |
+| F-011 – F-012 | UC-004 | API za postove i kontrola vidljivosti | na čekanju |
+| F-013 – F-015 | UC-005 | Pregled javnih profila i postova, API za favorite i preuzimanje slika | na čekanju |
+| F-016 | UC-002, UC-003 | Provjera vlasništva i prava pristupa radnoj okolini | na čekanju |
+
 
 Nedostajuće poveznice bit će dopunjene kad nastanu obrasci uporabe, arhitektura i ispitni slučajevi.
 
