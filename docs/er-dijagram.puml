@@ -1,0 +1,72 @@
+@startuml
+hide circle
+skinparam dpi 150
+
+entity User {
+  * id : integer <<PK>>
+  --
+  * auth0_sub : varchar(255) <<unique>>
+  email : varchar(255)
+  username : varchar(50) <<unique>>
+  display_name : varchar(255)
+  avatar_url : varchar(500)
+  bio : text
+  * created_at : timestamptz
+}
+
+entity Folder {
+  * id : integer <<PK>>
+  --
+  * owner_id : integer <<FK>>
+  parent_id : integer <<FK>>
+  * name : varchar(255)
+  * created_at : timestamptz
+}
+
+entity ImageFile {
+  * id : integer <<PK>>
+  --
+  * folder_id : integer <<FK>>
+  * name : varchar(255)
+  * format : varchar(10)
+  size_bytes : integer
+  * file_path : varchar(500) <<unique>>
+  * created_at : timestamptz
+  * updated_at : timestamptz
+}
+
+entity Post {
+  * id : integer <<PK>>
+  --
+  * user_id : integer <<FK>>
+  * image_id : integer <<FK>>
+  * description : text
+  * is_public : boolean
+  * created_at : timestamptz
+  * updated_at : timestamptz
+}
+
+entity FavoritePost {
+  * user_id : integer <<PK, FK>>
+  * post_id : integer <<PK, FK>>
+  --
+  * created_at : timestamptz
+}
+
+entity FavoriteProfile {
+  * user_id : integer <<PK, FK>>
+  * profile_user_id : integer <<PK, FK>>
+  --
+  * created_at : timestamptz
+}
+
+User ||--o{ Folder : "posjeduje"
+Folder |o--o{ Folder : "sadrži podmape"
+Folder ||--o{ ImageFile : "sadrži"
+User ||--o{ Post : "objavljuje"
+ImageFile ||--o{ Post : "prikazuje se u"
+User ||--o{ FavoritePost : "dodaje u favorite"
+Post ||--o{ FavoritePost : "nalazi se u favoritima"
+User ||--o{ FavoriteProfile : "dodaje u favorite"
+User ||--o{ FavoriteProfile : "nalazi se u favoritima"
+@enduml
