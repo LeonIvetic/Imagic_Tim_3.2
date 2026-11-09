@@ -3,6 +3,20 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { LoginButton, LogoutButton, SignupButton } from './auth/AuthButtons.jsx'
 import { useApiFetch } from './api.js'
 import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import Logo from './components/Logo.jsx';
+import Avatar from './components/Avatar.jsx';
+
+
+import AppLayout from './layout/AppLayout.jsx';
+import Workspace from './pages/Workspace.jsx';
+import ImageViewer from './pages/ImageViewer.jsx';
+import ArticGallery from './pages/ArticGallery.jsx';
+import MyProfile from './pages/MyProfile.jsx';
+import Users from './pages/Users.jsx';
+import PublicProfile from './pages/PublicProfile.jsx';
+import Favorites from './pages/Favorites.jsx';
 
 function App() {
   const { isLoading, isAuthenticated, error } = useAuth0()
@@ -24,17 +38,33 @@ function App() {
     )
   }
 
-  return isAuthenticated ? <Home /> : <LoginPage error={error} />
+  if (!isAuthenticated) {
+    return (
+      <LoginPage error={error} />
+    )
+  }
+
+  return (
+
+    <BrowserRouter>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route index element={<Navigate to="/radna-okolina" replace />} />
+          <Route path="radna-okolina/:folderId?" element={<Workspace />} />
+          <Route path="slika/:imageId" element={<ImageViewer />} />
+          <Route path="artic" element={<ArticGallery />} />
+          <Route path="profil" element={<MyProfile />} />
+          <Route path="korisnici" element={<Users />} />
+          <Route path="korisnici/:username" element={<PublicProfile />} />
+          <Route path="favoriti" element={<Favorites />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  )
+
 }
 
-function Logo({ light = false }) {
-  return (
-    <div className={`logo${light ? ' logo--light' : ''}`}>
-      <span className="logo__mark" aria-hidden="true" />
-      <span className="logo__text">Imagic</span>
-    </div>
-  )
-}
+
 
 /* ---------- Početna stranica za neprijavljene ---------- */
 
@@ -117,93 +147,5 @@ function LockIcon() {
   )
 }
 
-/* ---------- Privremena stranica za prijavljene ---------- */
-
-function Home() {
-  const { user } = useAuth0()
-  const name = user?.name ?? user?.email ?? 'korisniče'
-  const firstName = name.split(' ')[0]
-
-  return (
-    <div className="shell">
-      <header className="topbar">
-        <Logo />
-        <div className="topbar__user">
-          <Avatar user={user} />
-          <span className="topbar__name">{name}</span>
-          <LogoutButton className="btn btn--ghost btn--sm" />
-        </div>
-      </header>
-
-      <main className="shell__main">
-        <section className="welcome">
-          <span className="eyebrow">Prijavljen si</span>
-          <h1>Bok, {firstName}.</h1>
-          <p>Radna okolina stiže uskoro. Dotad možeš provjeriti vezu s backendom.</p>
-        </section>
-
-        <MeTest />
-      </main>
-    </div>
-  )
-}
-
-function Avatar({ user }) {
-  const [broken, setBroken] = useState(false)
-  const initial = (user?.name ?? user?.email ?? '?').charAt(0).toUpperCase()
-
-  if (user?.picture && !broken) {
-    return (
-      <img
-        className="avatar"
-        src={user.picture}
-        alt=""
-        referrerPolicy="no-referrer"
-        onError={() => setBroken(true)}
-      />
-    )
-  }
-  return <span className="avatar avatar--initial">{initial}</span>
-}
-
-// Poziva zaštićeni backend endpoint s tokenom.
-function MeTest() {
-  const apiFetch = useApiFetch()
-  const [result, setResult] = useState(null)
-  const [loading, setLoading] = useState(false)
-
-  async function callMe() {
-    setLoading(true)
-    try {
-      setResult({ ok: true, data: await apiFetch('/api/users/me') })
-    } catch (err) {
-      setResult({ ok: false, data: { error: err.message } })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <section className="card">
-      <div className="card__head">
-        <div>
-          <h2>Test veze s backendom</h2>
-          <p>
-            Šalje <code>GET /api/users/me</code> s access tokenom.
-          </p>
-        </div>
-        <button type="button" className="btn btn--primary" onClick={callMe} disabled={loading}>
-          {loading ? 'Šaljem…' : 'Pošalji zahtjev'}
-        </button>
-      </div>
-
-      {result && (
-        <pre className={`result ${result.ok ? 'result--ok' : 'result--err'}`}>
-          {JSON.stringify(result.data, null, 2)}
-        </pre>
-      )}
-    </section>
-  )
-}
 
 export default App
