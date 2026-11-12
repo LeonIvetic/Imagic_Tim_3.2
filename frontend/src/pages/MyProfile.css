@@ -1,0 +1,78 @@
+.my-profile,
+.my-profile__posts {
+    display: grid;
+    gap: 1.25rem;
+    min-width: 0;
+}
+
+.my-profile__summary,
+.my-profile__heading,
+.my-profile__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.my-profile__summary,
+.my-profile__form {
+    padding: clamp(0.85rem, 4vw, 1.5rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--white);
+}
+
+.my-profile__summary > div {
+    flex: 1 1 12rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.my-profile__summary .avatar {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.5rem;
+}
+
+.my-profile__heading {
+    justify-content: space-between;
+}
+
+.my-profile__form,
+.my-profile__form label {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.my-profile__form {
+    gap: 1rem;
+}
+
+.my-profile__form input:not([type='checkbox']),
+.my-profile__form textarea,
+.my-profile__form select {
+    width: 100%;
+    min-width: 0;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font: inherit;
+    color: var(--ink);
+    background: var(--cream);
+}
+
+.my-profile__form .my-profile__visibility {
+    display: flex;
+    align-items: center;
+}
+
+.my-profile__preview {
+    width: min(100%, 12rem);
+    border-radius: var(--radius-sm);
+}
+
+.my-profile__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1rem;
+}
