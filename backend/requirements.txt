@@ -6,3 +6,6 @@ alembic
 python-dotenv
 httpx
 PyJWT[crypto]
+Pillow
+python-multipart
+pytest
