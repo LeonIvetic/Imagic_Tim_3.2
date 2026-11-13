@@ -1,7 +1,5 @@
-function Favorites() {
-    return (<>
-    </>
-    )
-}
+import ComingSoon from './ComingSoon.jsx'
 
-export default Favorites
+export default function Favorites() {
+  return <ComingSoon title="Favoriti" text="Spremljeni postovi i stranice drugih korisnika (UC-005)." />
+}
