@@ -7,3 +7,6 @@ venv/
 .env
 .DS_Store
 .vscode/
+
+# slike koje korisnici učitaju (backend/uploads)
+uploads/
