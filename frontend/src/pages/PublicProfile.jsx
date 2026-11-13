@@ -1,7 +1,5 @@
-function PublicProfile() {
-    return (<>
-    </>
-    )
-}
+import ComingSoon from './ComingSoon.jsx'
 
-export default PublicProfile
+export default function PublicProfile() {
+  return <ComingSoon title="Javna stranica" text="Javni postovi drugog korisnika (UC-005)." />
+}

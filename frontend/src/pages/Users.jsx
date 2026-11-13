@@ -1,7 +1,5 @@
-function Users() {
-    return (<>
-    </>
-    )
-}
+import ComingSoon from './ComingSoon.jsx'
 
-export default Users
+export default function Users() {
+  return <ComingSoon title="Korisnici" text="Popis korisnika i njihovih javnih stranica (UC-005)." />
+}
