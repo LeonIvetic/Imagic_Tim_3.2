@@ -100,5 +100,9 @@ def get_current_user(
         return user
     db.refresh(user)
 
-    # TODO (6. tjedan): ovdje se novom korisniku dodaju 3 početne slike.
+    # Prva prijava: korijenska mapa i 3 početne slike (UC-001, korak 8).
+    from app.seed import seed_initial_images
+    from app.workspace import get_or_create_root
+
+    seed_initial_images(db, get_or_create_root(db, user))
     return user
