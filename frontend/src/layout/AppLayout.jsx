@@ -43,7 +43,7 @@ export default function AppLayout() {
                 </div>
             </header>
 
-            <nav className="mainnav" aruia-label="Glavna navigacija">
+            <nav className="mainnav" aria-label="Glavna navigacija">
                 {NAV_ITEMS.map(item => (
                     <NavLink key={item.to} to={item.to} className="mainnav__link">
                         {item.icon}

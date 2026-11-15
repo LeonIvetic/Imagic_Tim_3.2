@@ -8,7 +8,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Imagic API")
 from app.users import router as users_router
+from app.workspace import router as workspace_router
 app.include_router(users_router)
+app.include_router(workspace_router)
 
 
 # CORS ce nam trebati jer ce nam backend biti na 8000 a Vite server za React na 5173

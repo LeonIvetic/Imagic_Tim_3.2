@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { LoginButton, LogoutButton, SignupButton } from './auth/AuthButtons.jsx'
-import { useApiFetch } from './api.js'
+import { LoginButton, SignupButton } from './auth/AuthButtons.jsx'
 import './App.css'
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Logo from './components/Logo.jsx';
-import Avatar from './components/Avatar.jsx';
 
 
 import AppLayout from './layout/AppLayout.jsx';
@@ -17,6 +15,7 @@ import MyProfile from './pages/MyProfile.jsx';
 import Users from './pages/Users.jsx';
 import PublicProfile from './pages/PublicProfile.jsx';
 import Favorites from './pages/Favorites.jsx';
+import { DataProvider } from './data/DataProvider.jsx'
 
 function App() {
   const { isLoading, isAuthenticated, error } = useAuth0()
@@ -45,21 +44,22 @@ function App() {
   }
 
   return (
-
-    <BrowserRouter>
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route index element={<Navigate to="/radna-okolina" replace />} />
-          <Route path="radna-okolina/:folderId?" element={<Workspace />} />
-          <Route path="slika/:imageId" element={<ImageViewer />} />
-          <Route path="artic" element={<ArticGallery />} />
-          <Route path="profil" element={<MyProfile />} />
-          <Route path="korisnici" element={<Users />} />
-          <Route path="korisnici/:username" element={<PublicProfile />} />
-          <Route path="favoriti" element={<Favorites />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <DataProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route index element={<Navigate to="/radna-okolina" replace />} />
+            <Route path="radna-okolina/:folderId?" element={<Workspace />} />
+            <Route path="slika/:imageId" element={<ImageViewer />} />
+            <Route path="artic" element={<ArticGallery />} />
+            <Route path="profil" element={<MyProfile />} />
+            <Route path="korisnici" element={<Users />} />
+            <Route path="korisnici/:username" element={<PublicProfile />} />
+            <Route path="favoriti" element={<Favorites />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </DataProvider>
   )
 
 }
