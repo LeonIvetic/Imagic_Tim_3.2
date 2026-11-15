@@ -18,13 +18,24 @@ export function validateFile(file) {
 // `stamp` (npr. updated_at) ponovno dohvaća sliku kad se promijeni.
 export function useImageUrl(imageId, stamp) {
   const { getImageBlob } = useData()
+  return useBlobUrl(getImageBlob, imageId, stamp)
+}
+
+// Isto, ali preko posta: radi i za tuđe javne postove (/api/posts/{id}/image).
+export function usePostImageUrl(postId, stamp) {
+  const { getPostImageBlob } = useData()
+  return useBlobUrl(getPostImageBlob, postId, stamp)
+}
+
+function useBlobUrl(load, id, stamp) {
   const [state, setState] = useState({ url: null, error: null })
 
   useEffect(() => {
     let url = null
     let cancelled = false
     setState({ url: null, error: null })
-    getImageBlob(imageId)
+    if (id == null || id === '') return undefined
+    load(id)
       .then((blob) => {
         if (cancelled) return
         url = URL.createObjectURL(blob)
@@ -35,9 +46,9 @@ export function useImageUrl(imageId, stamp) {
       cancelled = true
       if (url) URL.revokeObjectURL(url)
     }
-    // getImageBlob je stabilan za istu sesiju; ne ovisi o `version`.
+    // load je stabilan za istu sesiju; ne ovisi o `version`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageId, stamp])
+  }, [id, stamp])
 
   return state
 }
