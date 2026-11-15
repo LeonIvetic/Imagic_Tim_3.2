@@ -1,33 +1,14 @@
-import { useState } from 'react'
-import { useAuth0 } from '@auth0/auth0-react'
+import { useEffect, useState } from 'react'
 import Avatar from '../components/Avatar.jsx'
 import PostCard from '../components/PostCard.jsx'
-import sampleImage from '../assets/hero.png'
+import { useData } from '../data/useData.js'
+import { useImageUrl, usePostImageUrl } from '../data/images.js'
 import './MyProfile.css'
 
-const images = [
-    { id: 'demo-image', name: 'Ogledna slika', url: sampleImage },
-]
+// Moja javna stranica (UC-004): profil i postovi. Podaci dolaze s backenda
+// (/api/users/me, /api/posts), pa ih vide i drugi korisnici te ostaju nakon odjave.
 
-function readData(storageKey, user) {
-    const initialData = {
-        profile: {
-            display_name: user.name || '',
-            username: user.nickname || '',
-            avatar_url: user.picture || '',
-            bio: '',
-        },
-        posts: [],
-    }
-
-    try {
-        return JSON.parse(localStorage.getItem(storageKey)) ?? initialData
-    } catch {
-        return initialData
-    }
-}
-
-function ProfileForm({ profile, onSave, onCancel }) {
+function ProfileForm({ profile, busy, onSave, onCancel }) {
     function handleSubmit(event) {
         event.preventDefault()
         const fields = new FormData(event.currentTarget)
@@ -48,7 +29,7 @@ function ProfileForm({ profile, onSave, onCancel }) {
                 Korisničko ime
                 <input
                     name="username"
-                    defaultValue={profile.username}
+                    defaultValue={profile.username ?? ''}
                     pattern="[A-Za-z0-9_.]+"
                     maxLength={50}
                     required
@@ -59,7 +40,7 @@ function ProfileForm({ profile, onSave, onCancel }) {
                 Ime za prikaz
                 <input
                     name="display_name"
-                    defaultValue={profile.display_name}
+                    defaultValue={profile.display_name ?? ''}
                     maxLength={255}
                     required
                 />
@@ -67,7 +48,7 @@ function ProfileForm({ profile, onSave, onCancel }) {
 
             <label>
                 Opis
-                <textarea name="bio" defaultValue={profile.bio} rows={3} />
+                <textarea name="bio" defaultValue={profile.bio ?? ''} rows={3} maxLength={1000} />
             </label>
 
             <label>
@@ -75,14 +56,14 @@ function ProfileForm({ profile, onSave, onCancel }) {
                 <input
                     name="avatar_url"
                     type="url"
-                    defaultValue={profile.avatar_url}
+                    defaultValue={profile.avatar_url ?? ''}
                     maxLength={500}
                 />
             </label>
 
             <div className="my-profile__actions">
-                <button className="btn btn--primary" type="submit">
-                    Spremi profil
+                <button className="btn btn--primary" type="submit" disabled={busy}>
+                    {busy ? 'Spremanje…' : 'Spremi profil'}
                 </button>
                 <button className="btn btn--secondary" type="button" onClick={onCancel}>
                     Odustani
@@ -92,9 +73,10 @@ function ProfileForm({ profile, onSave, onCancel }) {
     )
 }
 
-function PostForm({ post, onSave, onCancel }) {
-    const [imageId, setImageId] = useState(post?.image_id ?? '')
-    const image = images.find((entry) => entry.id === imageId)
+function PostForm({ post, images, busy, onSave, onCancel }) {
+    const [imageId, setImageId] = useState(post ? String(post.image_id) : '')
+    const image = images.find((entry) => String(entry.id) === imageId)
+    const preview = useImageUrl(image?.id, image?.updated_at)
 
     function handleSubmit(event) {
         event.preventDefault()
@@ -103,7 +85,6 @@ function PostForm({ post, onSave, onCancel }) {
         const fields = new FormData(event.currentTarget)
 
         onSave({
-            id: post?.id ?? crypto.randomUUID(),
             image_id: image.id,
             description: fields.get('description').trim(),
             is_public: fields.has('is_public'),
@@ -121,7 +102,9 @@ function PostForm({ post, onSave, onCancel }) {
                     onChange={(event) => setImageId(event.target.value)}
                     required
                 >
-                    <option value="">Odaberi sliku</option>
+                    <option value="">
+                        {images.length ? 'Odaberi sliku' : 'Radna okolina nema slika'}
+                    </option>
                     {images.map((entry) => (
                         <option key={entry.id} value={entry.id}>
                             {entry.name}
@@ -130,8 +113,8 @@ function PostForm({ post, onSave, onCancel }) {
                 </select>
             </label>
 
-            {image && (
-                <img className="my-profile__preview" src={image.url} alt={image.name} />
+            {preview.url && (
+                <img className="my-profile__preview" src={preview.url} alt={image.name} />
             )}
 
             <label>
@@ -140,6 +123,7 @@ function PostForm({ post, onSave, onCancel }) {
                     name="description"
                     defaultValue={post?.description ?? ''}
                     rows={3}
+                    maxLength={2000}
                 />
             </label>
 
@@ -153,8 +137,8 @@ function PostForm({ post, onSave, onCancel }) {
             </label>
 
             <div className="my-profile__actions">
-                <button className="btn btn--primary" type="submit" disabled={!image}>
-                    Spremi post
+                <button className="btn btn--primary" type="submit" disabled={!image || busy}>
+                    {busy ? 'Spremanje…' : 'Spremi post'}
                 </button>
                 <button className="btn btn--secondary" type="button" onClick={onCancel}>
                     Odustani
@@ -164,46 +148,76 @@ function PostForm({ post, onSave, onCancel }) {
     )
 }
 
-function ProfilePage({ user }) {
-    const storageKey = `imagic:my-profile:${user.sub}`
-    const [data, setData] = useState(() => readData(storageKey, user))
+// PostCard prima gotov image_url; ovdje ga dohvaćamo preko /api/posts/{id}/image.
+function ProfilePostCard({ post, author, actions }) {
+    const { url } = usePostImageUrl(post.id, `${post.image_id}-${post.image_updated_at}`)
+    return (
+        <PostCard
+            post={{ ...post, image_url: url }}
+            author={author}
+            actions={actions}
+        />
+    )
+}
+
+export default function MyProfile() {
+    const data = useData()
+    const [state, setState] = useState(null) // { profile, posts, images }
+    const [loadError, setLoadError] = useState('')
     const [editingProfile, setEditingProfile] = useState(false)
     const [postEditor, setPostEditor] = useState(null)
     const [pendingDelete, setPendingDelete] = useState(null)
+    const [busy, setBusy] = useState(false)
     const [error, setError] = useState('')
-    const { profile, posts } = data
 
-    function save(nextData) {
-        try {
-            localStorage.setItem(storageKey, JSON.stringify(nextData))
-        } catch {
-            setError('Spremanje nije uspjelo. Pokušaj ponovno.')
-            return false
+    // data.version se mijenja nakon svake izmjene, pa se podaci ponovno učitaju.
+    useEffect(() => {
+        let cancelled = false
+        Promise.all([data.getMe(), data.listMyPosts(), data.listAllImages()])
+            .then(([profile, posts, images]) => {
+                if (!cancelled) {
+                    setState({ profile, posts, images })
+                    setLoadError('')
+                }
+            })
+            .catch((err) => !cancelled && setLoadError(err.message))
+        return () => {
+            cancelled = true
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data.version])
 
-        setData(nextData)
+    // Izvodi izmjenu na backendu; greška (npr. zauzeto korisničko ime) ostaje vidljiva.
+    async function run(action) {
+        setBusy(true)
         setError('')
-        return true
+        try {
+            await action()
+            return true
+        } catch (err) {
+            setError(err.message)
+            return false
+        } finally {
+            setBusy(false)
+        }
     }
 
-    function saveProfile(nextProfile) {
-        if (save({ ...data, profile: nextProfile })) {
+    async function saveProfile(fields) {
+        if (await run(() => data.updateMe(fields))) {
             setEditingProfile(false)
         }
     }
 
-    function savePost(post) {
-        const nextPosts = postEditor.post
-            ? posts.map((entry) => entry.id === post.id ? post : entry)
-            : [post, ...posts]
-
-        if (save({ ...data, posts: nextPosts })) {
-            setPostEditor(null)
-        }
+    async function savePost(fields) {
+        const editing = postEditor.post
+        const ok = await run(() =>
+            editing ? data.updatePost(editing.id, fields) : data.createPost(fields),
+        )
+        if (ok) setPostEditor(null)
     }
 
-    function removePost(id) {
-        if (save({ ...data, posts: posts.filter((post) => post.id !== id) })) {
+    async function removePost(id) {
+        if (await run(() => data.deletePost(id))) {
             setPendingDelete(null)
 
             if (postEditor?.post?.id === id) {
@@ -211,6 +225,11 @@ function ProfilePage({ user }) {
             }
         }
     }
+
+    if (loadError) return <p role="alert">{loadError}</p>
+    if (!state) return <p>Učitavanje…</p>
+
+    const { profile, posts, images } = state
 
     return (
         <div className="my-profile">
@@ -220,7 +239,7 @@ function ProfilePage({ user }) {
             <section className="my-profile__summary" aria-label="Podaci profila">
                 <Avatar
                     key={profile.avatar_url}
-                    user={{ name: profile.display_name, picture: profile.avatar_url }}
+                    user={{ name: profile.display_name, email: profile.email, picture: profile.avatar_url }}
                 />
 
                 <div>
@@ -242,6 +261,7 @@ function ProfilePage({ user }) {
             {editingProfile && (
                 <ProfileForm
                     profile={profile}
+                    busy={busy}
                     onSave={saveProfile}
                     onCancel={() => setEditingProfile(false)}
                 />
@@ -264,6 +284,8 @@ function ProfilePage({ user }) {
                     <PostForm
                         key={postEditor.post?.id ?? 'new'}
                         post={postEditor.post}
+                        images={images}
+                        busy={busy}
                         onSave={savePost}
                         onCancel={() => setPostEditor(null)}
                     />
@@ -272,59 +294,48 @@ function ProfilePage({ user }) {
                 {posts.length === 0 && <p>Još nemaš postova.</p>}
 
                 <div className="my-profile__grid">
-                    {posts.map((post) => {
-                        const image = images.find((entry) => entry.id === post.image_id)
-
-                        return (
-                            <PostCard
-                                key={post.id}
-                                post={{ ...post, image_url: image?.url, image_name: image?.name }}
-                                author={profile}
-                                actions={pendingDelete === post.id ? (
-                                    <>
-                                        <p role="status">Želiš obrisati ovaj post?</p>
-                                        <button
-                                            className="btn btn--primary btn--sm"
-                                            onClick={() => removePost(post.id)}
-                                        >
-                                            Potvrdi brisanje
-                                        </button>
-                                        <button
-                                            className="btn btn--secondary btn--sm"
-                                            onClick={() => setPendingDelete(null)}
-                                        >
-                                            Odustani
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <button
-                                            className="btn btn--secondary btn--sm"
-                                            onClick={() => setPostEditor({ post })}
-                                        >
-                                            Uredi
-                                        </button>
-                                        <button
-                                            className="btn btn--ghost btn--sm"
-                                            onClick={() => setPendingDelete(post.id)}
-                                        >
-                                            Obriši
-                                        </button>
-                                    </>
-                                )}
-                            />
-                        )
-                    })}
+                    {posts.map((post) => (
+                        <ProfilePostCard
+                            key={post.id}
+                            post={post}
+                            author={profile}
+                            actions={pendingDelete === post.id ? (
+                                <>
+                                    <p role="status">Želiš obrisati ovaj post?</p>
+                                    <button
+                                        className="btn btn--primary btn--sm"
+                                        disabled={busy}
+                                        onClick={() => removePost(post.id)}
+                                    >
+                                        Potvrdi brisanje
+                                    </button>
+                                    <button
+                                        className="btn btn--secondary btn--sm"
+                                        onClick={() => setPendingDelete(null)}
+                                    >
+                                        Odustani
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <button
+                                        className="btn btn--secondary btn--sm"
+                                        onClick={() => setPostEditor({ post })}
+                                    >
+                                        Uredi
+                                    </button>
+                                    <button
+                                        className="btn btn--ghost btn--sm"
+                                        onClick={() => setPendingDelete(post.id)}
+                                    >
+                                        Obriši
+                                    </button>
+                                </>
+                            )}
+                        />
+                    ))}
                 </div>
             </section>
         </div>
     )
-}
-
-export default function MyProfile() {
-    const { user } = useAuth0()
-
-    if (!user?.sub) return <p>Profil trenutno nije dostupan.</p>
-
-    return <ProfilePage key={user.sub} user={user} />
 }

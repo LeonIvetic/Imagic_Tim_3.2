@@ -25,6 +25,8 @@ export function DataProvider({ children }) {
 
       // ---------- Korisnik ----------
       getMe: () => apiFetch('/api/users/me'),
+      // Polja: username, display_name, bio, avatar_url (izostavljena ostaju ista).
+      updateMe: mutation((fields) => apiFetch('/api/users/me', json('PATCH', fields))),
 
       // ---------- Mape (F-003) ----------
       getRootFolder: () => apiFetch('/api/folders/root'),
@@ -57,6 +59,17 @@ export function DataProvider({ children }) {
         apiFetch(`/api/images/${id}`, json('PATCH', { folder_id: folderId })),
       ),
       deleteImage: mutation((id) => apiFetch(`/api/images/${id}`, { method: 'DELETE' })),
+      // Sve slike korisnika iz svih mapa (odabir slike za post).
+      listAllImages: () => apiFetch('/api/images'),
+
+      // ---------- Postovi (F-011, F-012) ----------
+      // → [{ id, image_id, image_name, image_updated_at, description, is_public, created_at, updated_at }]
+      listMyPosts: () => apiFetch('/api/posts/mine'),
+      createPost: mutation((fields) => apiFetch('/api/posts', json('POST', fields))),
+      updatePost: mutation((id, fields) => apiFetch(`/api/posts/${id}`, json('PATCH', fields))),
+      deletePost: mutation((id) => apiFetch(`/api/posts/${id}`, { method: 'DELETE' })),
+      // Slika posta: vlasniku uvijek, drugima samo ako je post javan.
+      getPostImageBlob: (id) => apiFetch(`/api/posts/${id}/image`, { as: 'blob' }),
     }
   }, [apiFetch, version])
 

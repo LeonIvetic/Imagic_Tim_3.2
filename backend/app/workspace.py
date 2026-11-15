@@ -286,6 +286,27 @@ def delete_folder(folder_id: int, user: User = Depends(get_current_user), db: Se
 
 # ---------- Slike ----------
 
+@router.get("/images", response_model=list[ImageOut])
+def all_images(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Sve slike korisnika iz svih mapa (npr. za odabir slike pri objavi posta)."""
+    return db.scalars(
+        select(ImageFile)
+        .join(Folder, ImageFile.folder_id == Folder.id)
+        .where(Folder.owner_id == user.id)
+        .order_by(ImageFile.name, ImageFile.id)
+    ).all()
+
+
+def preview_response(image: ImageFile) -> Response:
+    """Slika za prikaz u pregledniku; TIFF se pretvara u PNG. Pozivatelj provjerava pravo pristupa."""
+    if image.format in storage.BROWSER_FORMATS:
+        path = storage.absolute(image.file_path)
+        if not path.exists():
+            raise HTTPException(404, "Datoteka slike nije pronađena.")
+        return FileResponse(path, media_type=storage.MIME_BY_FORMAT[image.format])
+    return Response(storage.browser_preview(image.file_path), media_type="image/png")
+
+
 @router.post("/images", response_model=ImageOut, status_code=201)
 async def upload_image(
     folder_id: int = Form(...),
@@ -332,10 +353,7 @@ def image_file(
 @router.get("/images/{image_id}/preview")
 def image_preview(image_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Slika za prikaz u pregledniku; TIFF se pretvara u PNG."""
-    image = own_image(db, user, image_id)
-    if image.format in storage.BROWSER_FORMATS:
-        return image_file(image_id, False, user, db)
-    return Response(storage.browser_preview(image.file_path), media_type="image/png")
+    return preview_response(own_image(db, user, image_id))
 
 
 @router.patch("/images/{image_id}", response_model=ImageOut)
