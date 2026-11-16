@@ -71,7 +71,7 @@
 
 | Datum | ID zahtjeva | Promjena i razlog | Dogovoreno s / dokaz |
 |-------|-------------|-------------------|----------------------|
-| 30.10.2026. | NF-08 | Dodan novi nefunkcijski zahtjev za responzivnost stranice. Razlog: Korisnici će aplikaciji pristupati s različitih uređaja, a zadatak ne propisuje podržane veličine zaslona, pa ih je tim definirao. | Dogovor s asistentom na vježbi 26.10. |
+| 30.10.2026. | NF-08 | Dodan novi nefunkcijski zahtjev za responzivnost stranice. Razlog: Korisnici će aplikaciji pristupati s različitih uređaja, a zadatak ne propisuje podržane veličine zaslona, pa ih je tim definirao. | Dogovor s asistentom na [vježbi 26.10.](meeting-notes/2026-10-26-vjezba-1.md) |
 | 31.10.2026. | AS-01, C-02 | Obrada slika izvodi se na backendu (Pillow/OpenCV). Razlog: jedna implementacija alata na poslužitelju, neovisna o pregledniku. | Odluka tima ([sastanak 31.10.](meeting-notes/2026-10-31-tjedan-5.md)) |
 | 31.10.2026. | AS-02, F-001 | Za prijavu se koristi Auth0 (OAuth 2.0), a za pohranu podataka PostgreSQL. | Odluka tima ([sastanak 31.10.](meeting-notes/2026-10-31-tjedan-5.md)) |
 

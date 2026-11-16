@@ -42,7 +42,7 @@ Dodatni filtri/operatori, undo/redo, pretraživanje korisnika, lajkovi/komentari
 | Sloj | Odabir |
 |---|---|
 | Frontend | React + JavaScript |
-| Backend | FastAPI (Python) |
+| Backend | FastAPI (Python), SQLAlchemy + Alembic |
 | Autentifikacija | Auth0 (OAuth 2.0) |
 | Obrada slika | Pillow/OpenCV na backendu |
 | Dohvat slika | Art Institute of Chicago (Artic) API za početne testne slike |
