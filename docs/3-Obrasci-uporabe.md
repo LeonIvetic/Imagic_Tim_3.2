@@ -1,12 +1,20 @@
 # 3. Obrasci uporabe
 
-**Cilj:** Opisati aktere i reprezentativne interakcije korisnika sa sustavom.
+**Cilj:** Prikazati glavne interakcije između aktera aplikacije i sustava. Opisati kako akter ostvaruje cilj i što se događa kada važan korak ne uspije.
 
-## 3.1 Akteri
+## 3.1 Dijagram obrazaca uporabe
 
-Vidi [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-akteri).
+**Cilj:** Prikazati granicu sustava, relevantne aktere i njihove glavne ciljeve u preglednom UML dijagramu obrazaca uporabe.
 
-## 3.2 Popis obrazaca uporabe
+![Dijagram obrazaca uporabe](obrasci-uporabe.png)
+
+**PlantUML izvor:** [obrasci-uporabe.puml](obrasci-uporabe.puml)
+
+## 3.2 Specifikacije obrazaca uporabe
+
+**Cilj:** Za svaki obrazac uporabe iz dijagrama objasniti cilj aktera, uobičajenu interakciju s aplikacijom i važne alternative.
+
+Akteri su opisani u [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-akteri).
 
 | ID | Naziv | Akter | Povezani zahtjevi |
 |----|-------|-------|-------------------|
@@ -15,8 +23,6 @@ Vidi [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-akteri).
 | UC-003 | Obrada slike | Prijavljeni korisnik | F-005 – F-009 |
 | UC-004 | Objava posta | Prijavljeni korisnik | F-010 – F-012 |
 | UC-005 | Pregled tuđe stranice i favoriti | Prijavljeni korisnik | F-013 – F-016 |
-
-## 3.3 Opisi obrazaca uporabe
 
 ### UC-001 Prijava putem OAuth 2.0
 
@@ -241,9 +247,12 @@ A4 – Dodavanje slike u vlastitu radnu okolinu
 - nakon uspješnog dodavanja u radnu okolinu korisnik ima vlastitu kopiju slike u svojoj privatnoj radnoj okolini
 - sadržaj izvornog posta i stranice drugog korisnika ostaje nepromijenjen
 
+## 3.3 Provjera dosljednosti obrazaca uporabe
 
-## Dijagram obrazaca uporabe
+**Cilj:** Provjeriti međusobnu usklađenost obrazaca uporabe, aktera, zahtjeva i ispitnih slučajeva. Cjelovito mapiranje održava se u [matrici sljedivosti zahtjeva](2-Analiza-zahtjeva.md#26-sljedivost-zahtjeva).
 
-![Dijagram obrazaca uporabe](obrasci-uporabe.png)
-
-[PlantUML izvor](obrasci-uporabe.puml)
+| Provjera | Pitanje za tim |
+| --- | --- |
+| Zahtjev | Je li svaki važan obrazac uporabe povezan s postojećim zahtjevom? |
+| Akter | Odgovara li akter naveden ovdje prethodno utvrđenoj ulozi i dopuštenoj interakciji? |
+| Aplikacija | Može li tim demonstrirati opisani glavni rezultat i važnu alternativu ili je opis jasno označen kao trenutačno oblikovanje? |

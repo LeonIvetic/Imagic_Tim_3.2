@@ -1,31 +1,67 @@
 # 4. Arhitektura i oblikovanje
 
-**Cilj:** Opisati glavne odluke oblikovanja, strukturu sustava, podatke i ponašanje.
+**Cilj:** Definirati arhitekturni stil, dekompoziciju programa na podsustave i module, organizaciju podataka te dinamičko ponašanje tijekom izvođenja. Arhitektura predstavlja temelj za implementaciju i ažurira se pri svakoj važnijoj promjeni projektnih odluka.
 
-## 4.1 Pregled arhitekture
+| Arhitekturni pogled | Ključno inženjersko pitanje | Primijenjeni model ili dijagram |
+| :--- | :--- | :--- |
+| **Strategija rješenja** | Koji stil i temeljne odluke određuju program? | Tablica odluka (odjeljak 4.1) |
+| **Struktura podsustava** | Koji su glavni dijelovi i kako komuniciraju? | Dijagram komponenata (odjeljak 4.2) |
+| **Model podataka** | Kako su strukturirani trajni podaci programa? | Relacijski ER dijagram (odjeljak 4.3.1) |
+| **Struktura koda** | Kako su dodijeljene odgovornosti i ključne klase? | Reprezentativni dijagram razreda (odjeljak 4.3.2) |
+| **Dinamičko ponašanje** | Kako moduli surađuju pri obradi ključnih transakcija? | Sekvencijski dijagram (odjeljak 4.4.1) |
+| **Stanja sustava** | Kako ključni domenski objekt mijenja svoja stanja? | Dijagram stanja (odjeljak 4.4.2) |
+| **Fizički razmještaj** | Na kojim se izvršnim čvorovima program izvodi? | Dijagram razmještaja ([poglavlje 6](6-Postavljanje-instalacija-i-konfiguracija.md#61-prikaz-razmještaja)) |
+
+## 4.1 Ključne arhitekturne odluke
+
+**Cilj:** Objasniti nekoliko arhitekturnih odluka koje najviše utječu na rješenje i navesti njihove projektno specifične razloge.
+
+Imagic je jednostranična web-aplikacija (React SPA) koja s poslužiteljskim dijelom (FastAPI) komunicira preko REST API-ja. Poslužitelj provjerava identitet, pohranjuje podatke u PostgreSQL, a slike na disk.
 
 ```
-React SPA  <--REST/JSON-->  FastAPI  <-->  PostgreSQL
-                               |
-                               +--> pohrana datoteka (slike)
-                               +--> Auth0 (OAuth 2.0), Artic API
+React SPA  <--REST/JSON (/api/...)-->  FastAPI  <-->  PostgreSQL
+    |                                     |
+    +--> Auth0 (prijava, token)           +--> pohrana slika na disku (UPLOAD_DIR)
+                                          +--> Auth0 (provjera tokena, /userinfo)
+                                          +--> Artic API (3 početne slike)
 ```
 
-## 4.2 Odluke oblikovanja
+React SPA se prijavljuje preko Auth0 i uz svaki zahtjev backendu šalje pristupni token (`Authorization: Bearer`). Backend provjerava token Auth0 javnim ključevima, a pri prvoj prijavi dohvaća profil korisnika, stvara ga u bazi, stvara mu korijensku mapu i učitava 3 početne slike.
 
-| Odluka | Status | Razlog |
-|--------|--------|--------|
-| React + JavaScript (frontend) | Donesena | Odluka tima |
-| FastAPI (backend) | Donesena | Odluka tima |
-| Obrada slika na backendu (Pillow/OpenCV) | Donesena | Odluka tima (31.10.); jedna implementacija alata, neovisna o pregledniku |
-| PostgreSQL (baza podataka) | Donesena | Odluka tima (31.10.); relacijski podaci (korisnici, mape, datoteke, postovi, favoriti) |
-| Auth0 (OAuth 2.0) za prijavu | Donesena | Odluka tima (31.10.); aplikacija ne pohranjuje lozinke |
+| Odluka | Razmatrana alternativa | Projektno specifično obrazloženje i kompromis |
+| --- | --- | --- |
+| Obrada slika na poslužitelju (Pillow/OpenCV) | Obrada u pregledniku (ImageJS) ili mješovito rješenje | Svi alati (filtri, morfologija, geometrija, segmentacija) imaju jednu implementaciju neovisnu o pregledniku, a poslužitelj ionako čita datoteke i podržava TIFF, koji preglednici ne prikazuju. Kompromis: svaka obrada je zahtjev prema poslužitelju, pa rezultat ovisi o brzini mreže i opterećuje poslužitelj (NF-04). |
+| Prijava preko Auth0 (OAuth 2.0 / OpenID Connect) | Izravna integracija s pojedinim pružateljem identiteta (npr. Google) | Aplikacija ne pohranjuje lozinke (NF-01), a backend samo provjerava token izdan od Auth0 pomoću javnih ključeva (JWKS). Novi pružatelj dodaje se u Auth0 bez promjene koda. Kompromis: ovisnost o vanjskoj usluzi i potreba za upisom svake domene aplikacije u Auth0. |
+| Relacijska baza (PostgreSQL) | Dokumentna baza (MongoDB) ili SQLite | Mape, slike, postovi i favoriti međusobno su povezani stranim ključevima; ograničenja jedinstvenosti i kaskadno brisanje (4.3.1) provodi sama baza, što bi se u dokumentnoj bazi moralo osiguravati u kodu. SQLite ne podržava istovremeni rad više korisnika na poslužitelju jednako pouzdano i ne nudi se kao upravljana usluga na Railwayu. Kompromis: svaka promjena sheme zahtijeva Alembic migraciju, a lokalni razvoj traži pokrenut PostgreSQL (Docker). |
+| Slike na disku poslužitelja, u bazi samo putanja | Vanjska pohrana (S3-kompatibilna) | Dogovoreno s asistentom za prvu predaju: jednostavnije postavljanje bez dodatne usluge. Pristup datotekama prolazi samo kroz `backend/app/storage.py`, pa je kasniji prelazak ograničen na taj modul. Kompromis: disk mora biti trajan (Railway volume), a aplikacija se ne može horizontalno skalirati na više instanci. |
+| Frontend pristupa podacima samo kroz `frontend/src/data/` | Komponente izravno pozivaju API | Tijekom prototipa (6. tjedan) podaci su bili u pregledniku (localStorage, IndexedDB); zamjena za pozive REST API-ja promijenila je samo podatkovni sloj, ne komponente. Kompromis: dodatni sloj apstrakcije. |
+| Frontend i backend postavljeni kao jedan servis (FastAPI poslužuje i izgrađeni React) | Zasebno postavljanje frontenda (statički hosting) i backenda | Ista domena uklanja potrebu za CORS-om i pojednostavljuje Auth0 postavke (jedan URL); jedan Docker image i jedno postavljanje. Kompromis: frontend i backend uvijek se postavljaju zajedno. Detalji u [6.3](6-Postavljanje-instalacija-i-konfiguracija.md#63-javno-postavljanje-i-administracija). |
 
-## 4.3 Model podataka (nacrt)
+## 4.2 Gradivni blokovi i UML dijagram komponenata
 
-Entiteti: `User`, `Folder` (parent_id), `ImageFile` (folder_id, naziv, format, putanja), `Post` (user_id, image_id, tekst, is_public), `FavoritePost`, `FavoriteProfile`.
+**Cilj:** Prikazati logičku podjelu programa na komponente, njihova sučelja i vanjske integracije. Dijagram komponenata prikazuje logičku organizaciju, dok dijagram razmještaja prikazuje fizičko izvođenje. Ovaj prikaz ažurirajte kako sustav poprima konačan oblik.
 
-ER dijagram prikazuje entitete aplikacije, pripadajuće atribute i veze među njima. Izvor dijagrama (PlantUML) nalazi se u [er-dijagram.puml](er-dijagram.puml).
+**Dijagram komponenata:** [Dopuniti.]  
+**PlantUML izvor:** [Dopuniti.]
+
+| Komponenta | Odgovornost | Razlog za ovu granicu |
+| --- | --- | --- |
+|  |  |  |
+
+## 4.3 Model podataka i oblikovanje razreda
+
+**Cilj:** Objasniti važne informacije koje aplikacija pohranjuje i jedno reprezentativno područje oblikovanja na razini razreda. Model podataka i UML dijagram razreda odgovaraju na različita pitanja; jedno ne zamjenjuje drugo.
+
+### 4.3.1 ER dijagram i model podataka
+
+**Cilj:** Prikazati važne pohranjene entitete, njihove identifikatore i veze te dovoljno atributa za razumijevanje podataka aplikacije.
+
+**Izvor dijagrama:** [er-dijagram.puml](er-dijagram.puml)  
+**Implementacija:** SQLAlchemy modeli u `backend/app/models.py`, migracije u `backend/alembic/versions/`.
+
+Entiteti: `User`, `Folder` (parent_id), `ImageFile` (folder_id, naziv, format, putanja), `Post` (user_id, image_id, opis, is_public), `FavoritePost`, `FavoriteProfile`.
+
+ER dijagram prikazuje entitete aplikacije, pripadajuće atribute i veze među njima.
 
 ![ER dijagram](er-dijagram.png)
 
@@ -60,22 +96,22 @@ Napomena: Entiteti su u dijagramu imenovani u jednini, jednako kao klase u kodu 
 
 | Pitanje | Odluka | Razlog |
 |---|---|---|
-| Što se događa s objavom kad se njezina slika obriše iz radne okoline? | Backend prije brisanja provjerava koristi li sliku neka objava i traži potvrdu korisnika. Ako korisnik potvrdi, briše se slika i objave koje je koriste (`ON DELETE CASCADE`). | Objava bez slike nema smisla (F-011), a zaštita od slučajnog gubitka objave nalazi se u sučelju. |
+| Što se događa s objavom kad se njezina slika obriše iz radne okoline? | Sučelje prije brisanja traži potvrdu i upozorava da će se obrisati i objave koje koriste sliku. Nakon potvrde backend briše sliku, a baza objave koje je koriste (`ON DELETE CASCADE`). | Objava bez slike nema smisla (F-011), a zaštita od slučajnog gubitka objave nalazi se u sučelju. |
 | Briše li brisanje mape i njezin sadržaj? | Da. Brišu se podmape i zapisi datoteka u njima (`ON DELETE CASCADE`). Backend briše i stvarne datoteke. Korisnik ne može obrisati svoju korijensku mapu. | Baza briše samo zapise, a ne datoteke na disku. |
 | Smiju li dvije datoteke (ili mape) u istoj mapi imati isto ime? | Ne. Za slike je jedinstvena kombinacija (`folder_id`, `name`), a za mape (`owner_id`, `parent_id`, `name`). | Imenovanje i preimenovanje (F-003) ima smisla samo ako je ime u mapi jednoznačno. Kod slika nema problema s praznim vrijednostima jer je `folder_id` obvezan. Korijenske mape (`parent_id` je prazan) pokriva poseban indeks koji dopušta samo jednu korijensku mapu po korisniku. |
 | Zašto slika nema vlastitog vlasnika? | Vlasnik slike je vlasnik njezine mape (`Folder.owner_id`). | Vlasništvo je zapisano na jednom mjestu, pa ne može doći do nepodudaranja. Provjera vlasništva (F-016, NF-02) ide preko mape. |
-| Kako ostali korisnici vide sliku objave ako je radna okolina privatna? | Backend dopušta dohvat slike svakom prijavljenom korisniku samo ako postoji javna objava koja tu sliku koristi. Sve ostale slike ostaju privatne. | Objava upućuje na zapis `ImageFile` (`Post.image_id`), a ne na kopiju. |
+| Kako ostali korisnici vide sliku objave ako je radna okolina privatna? | Slika objave dohvaća se preko objave (`GET /api/posts/{id}/image`): vlasnik je uvijek vidi, a ostali prijavljeni korisnici samo ako je objava javna. Rute radne okoline (`/api/images/...`) dostupne su samo vlasniku. | Objava upućuje na zapis `ImageFile` (`Post.image_id`), a ne na kopiju. |
 | Što ako se izvorna slika prepiše? | Prepisana slika prikazuje se i u objavi. | Objava upućuje na isti zapis `ImageFile`. |
 | Smije li ista slika biti u više objava? | Da (na `Post.image_id` nema ograničenja jedinstvenosti). | Zahtjevi to ne ograničavaju. |
 | Što ako autor objavu postavi kao privatnu, a drugi je korisnik ima u favoritima? | Zapis favorita ostaje, ali se objava ne prikazuje dok je privatna. | Ako autor objavu opet učini javnom, vraća se među favorite. |
-| Kako se bilježi izmjena? | `ImageFile` i `Post` imaju `updated_at`, koji se postavlja pri svakoj izmjeni preko aplikacije. | Prepisivanje izvorne slike (F-009) i uređivanje objave (F-011) mijenjaju postojeće zapise. |
+| Kako se bilježi izmjena? | `ImageFile` i `Post` imaju `updated_at`, koji se automatski postavlja pri svakoj izmjeni zapisa. | Prepisivanje izvorne slike (F-009) i uređivanje objave (F-011) mijenjaju postojeće zapise. |
 | Postoje li tablice za lozinke ili sesije? | Ne. | Prijavu obavlja Auth0, a backend provjerava izdani token (NF-01). |
 
 **Ograničenja koja dijagram ne prikazuje**
 
 - `User`: `auth0_sub` je jedinstven; `username` je jedinstven (smije biti prazan).
 - `Folder`: jedinstveno ime mape unutar roditelja; točno jedna korijenska mapa po korisniku; mapa nije sama sebi roditelj. Backend osigurava da roditeljska mapa pripada istom korisniku i sprječava premještanje mape u vlastitu podmapu.
-- `ImageFile`: jedinstveno ime unutar mape; jedinstvena putanja datoteke. Format datoteke provjerava backend, ne baza.
+- `ImageFile`: jedinstveno ime unutar mape; jedinstvena putanja datoteke. Format datoteke (`jpeg`, `png`, `tiff`, `webp`) provjerava backend prema sadržaju datoteke, ne baza. Ako u mapi već postoji slika istog imena, backend novoj slici dodaje sufiks.
 - `Post`: `is_public` je zadano `false`; autor objave mora biti vlasnik slike (provjerava backend).
 - `FavoritePost` i `FavoriteProfile`: složeni primarni ključ; korisnik ne može favorizirati sam sebe.
 
@@ -83,5 +119,35 @@ Napomena: Entiteti su u dijagramu imenovani u jednini, jednako kao klase u kodu 
 
 - Brisanje korisnika briše njegove mape, slike, objave i favorite te zapise u kojima je on favorizirana stranica.
 - Brisanje mape briše podmape i zapise slika u njoj.
-- Brisanje slike briše objave koje je koriste (backend prije toga traži potvrdu).
+- Brisanje slike briše objave koje je koriste (sučelje prije toga traži potvrdu).
 - Brisanje objave uklanja je i iz favorita drugih korisnika.
+
+### 4.3.2 Reprezentativni UML dijagram razreda
+
+**Cilj:** Modelirati i prikazati razrede ili sučelja potrebna za dodjelu odgovornosti, operacija i veza u reprezentativnom dijelu sustava.
+
+**Dijagram razreda:** [Dopuniti.]  
+**PlantUML izvor:** [Dopuniti.]  
+**Referenca na kod pri završnom pregledu:** [Dopuniti.]
+
+## 4.4 Ponašanje tijekom izvođenja
+
+### 4.4.1 Reprezentativni UML sekvencijski dijagram
+
+[Dopuniti.]
+
+### 4.4.2 Reprezentativni UML dijagram stanja
+
+[Dopuniti.]
+
+## 4.5 Zapisi arhitekturnih odluka
+
+[Dopuniti.]
+
+## 4.6 Zajednička pravila oblikovanja (engl. Cross-cutting concerns)
+
+[Dopuniti.]
+
+## 4.7 Arhitekturni rizici i tehnički dug
+
+[Dopuniti.]

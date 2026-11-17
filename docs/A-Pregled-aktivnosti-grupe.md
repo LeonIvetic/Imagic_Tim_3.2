@@ -1,30 +1,59 @@
 # A. Pregled aktivnosti grupe
 
-**Cilj:** Zabilježiti aktivnosti tima, doprinose članova i izazove.
+**Cilj:** Prikazati kako je tim organizirao projekt, raspodijelio rad, reagirao na važne probleme i pridonio rezultatu.
 
-## A.1 Sastanci
+## A.1 Evidencija sastanaka
 
-Bilješke se nalaze u [meeting-notes](meeting-notes/).
+**Cilj:** Voditi kratak zapis projektnih sastanaka i tjedne koordinacije: tko je sudjelovao, što je odlučeno i koja je radnja uslijedila. Detaljne bilješke nalaze se u [meeting-notes](meeting-notes/).
 
-| Datum | Tema | Bilješke |
-|-------|------|----------|
-| 2026-10-26 | Laboratorijska vježba 1 (prezentacija zahtjeva) | [bilješke](meeting-notes/2026-10-26-vjezba-1.md) |
-| 2026-10-31 | Pregled rada i dogovor za 5. tjedan | [bilješke](meeting-notes/2026-10-31-tjedan-5.md) |
-| 2026-11-09 | Pregled rada i dogovor za 6. tjedan | [bilješke](meeting-notes/2026-11-09-tjedan-6.md) |
+Kratice: `LeI` = Leon Ivetić; `FB` = Florijan Blažeka; `RV` = Roko Vrdoljak; `FM` = Feđa Mitić; `LoI` = Lorena Ivanković; `MM` = Mihaela Miljavac; `AlI` = Alan Ivanković.
 
-## A.2 Doprinosi članova
+| Datum i sudionici | Glavna tema | Donesena odluka ili zadatak | Poveznica na zadatak ili rezultat, ako postoji |
+| --- | --- | --- | --- |
+| 26.10.2026.; svi članovi, asistent Lovro Bosnar | Laboratorijska vježba 1: prezentacija zahtjeva | Dodati nefunkcijski zahtjev za responzivnost (NF-08); prilagoditi README prema uputama asistenta | [bilješke](meeting-notes/2026-10-26-vjezba-1.md) |
+| 31.10.2026.; svi članovi (WhatsApp) | Dogovor za 5. tjedan | Prijava preko Auth0, baza PostgreSQL; prijava se ostvaruje već u 5. tjednu. Zadaci: model podataka (AlI, LoI), prijava – backend (FM), prijava – frontend (LeI, FB), obrasci uporabe (MM), dijagram razreda i dijagrami slijeda (RV) | [bilješke](meeting-notes/2026-10-31-tjedan-5.md) |
+| 9.11.2026.; svi članovi | Dogovor za 6. tjedan: klikabilni prototip | Prototip cijelog frontenda s podacima u pregledniku; komponente pristupaju podacima samo kroz `src/data/`; Artic API za početne slike uz rezervne slike. Zadaci: kostur i podatkovni sloj (LeI), radna okolina (FB), Artic i preglednik slike (LoI), profil i postovi (MM), tuđe stranice i favoriti (RV), prijava – backend (FM), modeli i migracija (AlI) | [bilješke](meeting-notes/2026-11-09-tjedan-6.md) |
+| 16.11.2026.; svi članovi | Dogovor nakon generalne probe | Filtar grayscale radi se Pillowom; slike do prve predaje ostaju na disku poslužitelja (dogovor s asistentom). Zadaci: obrasci uporabe (MM), dijagram razreda (RV), grayscale (FM), javno postavljanje (LeI) | [bilješke](meeting-notes/2026-11-16-generalna-proba.md) |
 
-| Član | Doprinos |
-|------|----------|
-| Leon Ivetić | Incijalna struktura repozitorija, prva inačica teksta dokumentacije prema predlošku. Koordinacija tima kroz projekt, dodjeljivanje i upravljanje zadatcima ostalih članova. Auth0 postavke (tenant, SPA, API), Issues i milestone, Auth0Provider, apiFetch, spajanje frontenda s backendom, koordinacija. Kostur aplikacije (rute, layout, navigacija), podatkovni sloj src/data/ (localStorage + IndexedDB), ensureUser, seed korisnika, review PR-ova, integracija i provjera na masteru. |
-| Feđa Mitić | Backend prijave: provjera Auth0 tokena, get_current_user sa stvaranjem korisnika, ruta za trenutnog korisnika, stvaranje korijenske mape pri stvaranju korisnika, održavanje dokumentacije.|
-| Roko Vrdoljak | Dijagram razreda i dijagrami slijeda (UC-001, UC-002), javne stranice drugih korisnika, favoriti, preuzimanje i kopiranje tuđe slike u svoju radnu okolinu. |
-| Florijan Blažeka | Login ekran, zaglavlje s imenom i odjavom, stanja učitavanja i greške. Ekran radne okoline: mape (stvori, preimenuj, obriši), upload s provjerom, izbornik slike (preimenuj, premjesti, preuzmi, obriši), prazna stanja. |
-| Alan Ivanković | Baza: docker-compose.yml (PostgreSQL), db.py, model User, Alembic migracija, upute u docs/6. Modeli Folder, ImageFile, Post, FavoritePost i FavoriteProfile s kaskadama i CHECK ograničenjem, druga migracija, tablica varijabli u docs/6.2 |
-| Lorena Ivanković | ER model cijele aplikacije (PlantUML, opis tablica u docs/4, odluke o brisanju i jedinstvenosti). Integracija Artic API-ja, 3 početne slike pri prvoj prijavi (seedInitialImages), ekran /artic, preglednik slike i panel alata obrade (samo sučelje). |
-| Mihaela Miljavac | Obrasci uporabe UC-001 do UC-005, dijagram obrazaca uporabe, tablica sljedivosti 2.6, ekran profila s uređivanjem, postovi (javni/privatni), komponenta PostCard. |
+## A.2 Plan rada
 
+**Cilj:** Prikazati planirani redoslijed rada i odgovornosti u timu.
 
-## A.3 Izazovi
+**Trenutačni plan:** zadaci se vode u [GitHub Issues](https://github.com/LeonIvetic/Imagic_Tim_3.2/issues) grupirani po milestoneovima, a tjedni plan u tablici ispod. Ažurnost plana održava LeI.
 
-[Dopuniti.]
+| Razdoblje/Tjedan | Glavni planirani rad | Odgovorni članovi | Poveznica na zadatke |
+| --- | --- | --- | --- |
+| 5. tjedan (31.10. – 8.11.) | Model podataka i inicijalizacija baze; prijava na backendu i frontendu; obrasci uporabe; dijagram razreda i dijagrami slijeda | AlI, LoI, FM, LeI, FB, MM, RV | [bilješke 31.10.](meeting-notes/2026-10-31-tjedan-5.md) |
+| 6. tjedan (9.11. – 15.11.) | Klikabilni prototip frontenda; prijava na backendu; modeli i migracija za cijeli ER model | svi članovi | [bilješke 9.11.](meeting-notes/2026-11-09-tjedan-6.md) |
+| 16.11. – prva predaja | Detaljniji obrasci uporabe, dijagram razreda, filtar grayscale, javno postavljanje | MM, RV, FM, LeI | [bilješke 16.11.](meeting-notes/2026-11-16-generalna-proba.md) |
+
+## A.3 Aktivnosti i doprinosi članova
+
+**Cilj:** Prikazati koji su članovi radili na važnim projektnim aktivnostima i približan trud koji prijavljuju. Sati su samoprijavljena procjena uloženog rada.
+
+| Član | Aktivnosti i reprezentativni rezultati | Prijavljeni sati |
+| --- | --- | --- |
+| Leon Ivetić | Inicijalna struktura repozitorija, prva inačica teksta dokumentacije prema predlošku. Koordinacija tima kroz projekt, dodjeljivanje i upravljanje zadatcima ostalih članova. Auth0 postavke (tenant, SPA, API), Issues i milestone, Auth0Provider, apiFetch, spajanje frontenda s backendom, koordinacija. Kostur aplikacije (rute, layout, navigacija), podatkovni sloj src/data/ (localStorage + IndexedDB), ensureUser, seed korisnika, review PR-ova, integracija i provjera na masteru. Javno postavljanje aplikacije (Dockerfile, Railway, Auth0 za produkcijsku domenu) i upute u docs/6.3. | [dopuniti] |
+| Feđa Mitić | Backend prijave: provjera Auth0 tokena, get_current_user sa stvaranjem korisnika, ruta za trenutnog korisnika, stvaranje korijenske mape pri stvaranju korisnika, održavanje dokumentacije. | [dopuniti] |
+| Roko Vrdoljak | Dijagram razreda i dijagrami slijeda (UC-001, UC-002), javne stranice drugih korisnika, favoriti, preuzimanje i kopiranje tuđe slike u svoju radnu okolinu. | [dopuniti] |
+| Florijan Blažeka | Login ekran, zaglavlje s imenom i odjavom, stanja učitavanja i greške. Ekran radne okoline: mape (stvori, preimenuj, obriši), upload s provjerom, izbornik slike (preimenuj, premjesti, preuzmi, obriši), prazna stanja. | [dopuniti] |
+| Alan Ivanković | Baza: docker-compose.yml (PostgreSQL), db.py, model User, Alembic migracija, upute u docs/6. Modeli Folder, ImageFile, Post, FavoritePost i FavoriteProfile s kaskadama i CHECK ograničenjem, druga migracija, tablica varijabli u docs/6.2 | [dopuniti] |
+| Lorena Ivanković | ER model cijele aplikacije (PlantUML, opis tablica u docs/4, odluke o brisanju i jedinstvenosti). Integracija Artic API-ja, 3 početne slike pri prvoj prijavi (seedInitialImages), ekran /artic, preglednik slike i panel alata obrade (samo sučelje). | [dopuniti] |
+| Mihaela Miljavac | Obrasci uporabe UC-001 do UC-005, dijagram obrazaca uporabe, tablica sljedivosti 2.6, ekran profila s uređivanjem, postovi (javni/privatni), komponenta PostCard. | [dopuniti] |
+
+## A.4 Pregled promjena u repozitoriju
+
+**Cilj:** Prikazati kada su promjene napravljene u repozitoriju i tko ih je napravio, uz napomenu da sam broj zapisa promjena ne mjeri kvalitetu doprinosa.
+
+**Prikaz aktivnosti repozitorija:** [GitHub Contributors](https://github.com/LeonIvetic/Imagic_Tim_3.2/graphs/contributors) za cijelo trajanje projekta.
+
+Graf prikazuje samo commitove na glavnoj grani. Promjene se u nju spajaju preko Pull Requestova, pa dio tuđeg rada može biti zabilježen pod članom koji je spojio ili integrirao promjene. Rad na oblikovanju, pregledu i dokumentaciji vidljiv je u tablici A.3.
+
+## A.5 Ključni inženjerski izazovi i rješenja
+
+**Cilj:** Dokumentirati stvarne tehničke i organizacijske prepreke s kojima se tim suočio, poduzete korektivne korake te konačni ishod.
+
+| Izazov | Poduzeta radnja | Ishod ili preostalo ograničenje |
+| --- | --- | --- |
+| Javno postavljanje uz trajnu pohranu slika i prijavu preko Auth0 | Odabran Railway s volumeom za slike; frontend i backend zapakirani u jedan Docker image na istoj domeni; produkcijska domena upisana u Auth0 | Aplikacija je javno dostupna i automatski se postavlja s grane `master`; trenutno radi na probnom planu |
+| [Dopuniti] | | |

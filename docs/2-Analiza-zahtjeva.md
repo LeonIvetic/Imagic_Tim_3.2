@@ -9,7 +9,7 @@
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 |----|------|-----------|-------|-----------------------|
 | F-001 | Korisnici se prijavljuju i registriraju putem OAuth 2.0 pružatelja identiteta. | Visok | Odobreni zadatak | Uspješna prijava otvara radnu okolinu i javnu stranicu korisnika; pri prvoj prijavi račun se automatski stvara; odustajanje od prijave ostavlja zaštićene radnje nedostupnima. |
-| F-002 | Korisnik može učitati (upload) i preuzeti (download) rasterske slike u najmanje 3 formata (npr. JPEG, PNG, TIF). | Visok | Odobreni zadatak | Slika u svakom od 3 formata može se učitati i pojavljuje se u radnoj okolini; preuzeta datoteka otvara se u standardnom pregledniku slika. |
+| F-002 | Korisnik može učitati (upload) i preuzeti (download) rasterske slike u najmanje 3 formata. Podržani su JPEG, PNG, TIFF i WebP. | Visok | Odobreni zadatak | Slika u svakom podržanom formatu može se učitati i pojavljuje se u radnoj okolini; preuzeta datoteka otvara se u standardnom pregledniku slika. |
 | F-003 | Radna okolina pohranjuje slike u strukturi mapa; korisnik može stvarati, preimenovati i brisati mape te imenovati i preimenovati datoteke. | Visok | Odobreni zadatak | Korisnik stvara ugniježđenu mapu, premješta u nju sliku, preimenuje mapu i datoteku; promjene su vidljive nakon ponovnog učitavanja. |
 | F-004 | Korisnik može prikazati odabranu sliku u radnoj okolini. | Visok | Odobreni zadatak | Odabirom datoteke slika se prikazuje u pregledniku slike. |
 | F-005 | Korisnik može primijeniti najmanje 5 filtara (npr. invert, grayscale, pixelate, blur, derivative). | Visok | Odobreni zadatak | Za svaki filtar vidljiv je promijenjeni rezultat na odabranoj slici. |
@@ -35,10 +35,11 @@
 | NF-02 | Pristup zaštićenim resursima (radna okolina, privatni postovi, uređivanje profila) dopušten je samo ovlaštenom korisniku. | Visok | Odobreni zadatak | Testni scenarij: neautorizirani i tuđi zahtjevi vraćaju grešku. |
 | NF-03 | Aplikacija se koristi u suvremenom web-pregledniku (Chrome, Firefox) bez dodatne instalacije. | Srednji | Procjena tima | Ručni test u najmanje dva preglednika. |
 | NF-04 | Obrada slike tipične veličine (do oko 5 MP) vraća rezultat u razumnom vremenu (cilj: unutar nekoliko sekundi). | Srednji | Procjena tima | Mjerenje vremena obrade na uzorku slika; granica se potvrđuje s asistentom. |
-| NF-05 | Učitane datoteke validiraju se po tipu i veličini; nepodržani formati odbijaju se uz razumljivu poruku. | Srednji | Procjena tima | Testni scenarij: upload nepodržane i prevelike datoteke. |
-| NF-06 | Tajne (OAuth ključevi, pristupni podaci) ne nalaze se u repozitoriju, već u varijablama okruženja. | Visok | Pravila kolegija | Pregled repozitorija; postoji `.env.example` bez stvarnih vrijednosti. |
+| NF-05 | Učitane datoteke validiraju se po stvarnom sadržaju (ne po nastavku imena) i veličini (najviše 10 MB); nepodržani formati i prevelike datoteke odbijaju se uz razumljivu poruku. | Srednji | Procjena tima | Testni scenarij: upload nepodržane i prevelike datoteke. |
+| NF-06 | Tajne (OAuth ključevi, pristupni podaci) ne nalaze se u repozitoriju, već u varijablama okruženja. | Visok | Pravila kolegija | Pregled repozitorija; datoteke `.env.example` sadrže samo javne vrijednosti (Auth0 domena, client ID, audience) i lozinku lokalne Docker baze, a produkcijske vrijednosti postavljene su kao varijable na Railwayu. |
 | NF-07 | Izvorni kod održava se na GitHubu uz Pull Requeste, Issues i verzioniranje. | Srednji | Pravila kolegija | Pregled povijesti repozitorija. |
 | NF-08 | Web aplikacija mora biti responzivna, tj. prilagoditi raspored i veličinu elemenata različitim dimenzijama zaslona (mobitel, tablet, desktop - minimalna širina 360px) bez horizontalnog skrolanja i gubitka funkcionalnosti. | Srednji | Procjena tima | Ručno testiranje u Chrome DevTools na različitim širinama ekrana. |
+| NF-09 | Aplikacija je javno dostupna putem HTTPS-a bez lokalne instalacije. | Visok | Generalna proba (16.11.2026.) | Otvaranje <https://imagictim32-production.up.railway.app> i prijava s uređaja izvan razvojnog okruženja. |
 
 ## 2.3 Dionici i akteri
 
@@ -63,7 +64,8 @@
 | C-04 | Ograničenje | Minimalni opseg obrade: 5 filtara, 4 morfološka operatora, 3 geometrijske transformacije, 1 algoritam segmentacije; najmanje 3 formata datoteka. | Zadatak | Ostvariti sve navedene alate; provjeriti u ispitivanju. |
 | AS-01 | Pretpostavka | Obrada slika izvodi se na backendu (Pillow/OpenCV). | Odluka tima | Odluka zabilježena u 2.5 i docs/4. |
 | AS-02 | Pretpostavka | Za prijavu je dovoljan jedan pružatelj identiteta; tim koristi Auth0 (OAuth 2.0). | Odluka tima | Odluka zabilježena u 2.5 i docs/4. |
-| AS-03 | Pretpostavka | Artic API dostupan je za dohvat početnih slika; ako nije, koriste se ugrađene slike. | Procjena tima | Provjeriti dostupnost pri implementaciji; predvidjeti rezervno rješenje. |
+| AS-03 | Pretpostavka | Artic API dostupan je za dohvat početnih slika; ako nije, koriste se ugrađene slike. | Procjena tima | Ostvareno: ugrađene slike nalaze se u `backend/app/seed/`, a prijava ne pada ako Artic ne odgovori (test `test_bez_artica_koriste_se_ugradene_slike`). |
+| AS-04 | Pretpostavka | Slike se pohranjuju na disku poslužitelja (Railway volume), a ne na vanjskom servisu za pohranu. | Dogovor s asistentom | Vrijedi do prve predaje; baza čuva samo putanju do datoteke, pa je kasniji prelazak na vanjsku pohranu ograničen na `backend/app/storage.py`. |
 
 ## 2.5 Značajne promjene zahtjeva
 
@@ -74,6 +76,8 @@
 | 30.10.2026. | NF-08 | Dodan novi nefunkcijski zahtjev za responzivnost stranice. Razlog: Korisnici će aplikaciji pristupati s različitih uređaja, a zadatak ne propisuje podržane veličine zaslona, pa ih je tim definirao. | Dogovor s asistentom na [vježbi 26.10.](meeting-notes/2026-10-26-vjezba-1.md) |
 | 31.10.2026. | AS-01, C-02 | Obrada slika izvodi se na backendu (Pillow/OpenCV). Razlog: jedna implementacija alata na poslužitelju, neovisna o pregledniku. | Odluka tima ([sastanak 31.10.](meeting-notes/2026-10-31-tjedan-5.md)) |
 | 31.10.2026. | AS-02, F-001 | Za prijavu se koristi Auth0 (OAuth 2.0), a za pohranu podataka PostgreSQL. | Odluka tima ([sastanak 31.10.](meeting-notes/2026-10-31-tjedan-5.md)) |
+| 9.11.2026. | F-002, NF-05 | Podržani formati utvrđeni su kao JPEG, PNG i WebP, a TIFF uz backend jer ga preglednici ne prikazuju (za prikaz se pretvara u PNG). Najveća veličina datoteke je 10 MB. | Odluka tima ([sastanak 9.11.](meeting-notes/2026-11-09-tjedan-6.md)) |
+| 16.11.2026. | NF-09, AS-04 | Dodan zahtjev za javnu dostupnost aplikacije; slike do prve predaje ostaju na disku poslužitelja. | Generalna proba i dogovor s asistentom ([sastanak 16.11.](meeting-notes/2026-11-16-generalna-proba.md)) |
 
 ## 2.6 Sljedivost zahtjeva
 
@@ -81,16 +85,16 @@
 
 | ID zahtjeva | Obrazac uporabe / modul | Arhitekturna realizacija | Ispitivanje ili provjera |
 |-------------|-------------------------|--------------------------|--------------------------|
-| F-001 | UC-001 | Modul za autentifikaciju | na čekanju |
-| F-002 – F-004 | UC-002 | Radna okolina i API za datoteke i mape | na čekanju |
-| F-005 – F-009 | UC-003 | Modul za obradu slika i API za datoteke | na čekanju |
-| F-010 | UC-004 | Modul za korisničke profile | na čekanju |
-| F-011 – F-012 | UC-004 | API za postove i kontrola vidljivosti | na čekanju |
-| F-013 – F-015 | UC-005 | Pregled javnih profila i postova, API za favorite i preuzimanje slika | na čekanju |
-| F-016 | UC-002, UC-003 | Provjera vlasništva i prava pristupa radnoj okolini | na čekanju |
+| F-001 | UC-001 | `backend/app/auth.py` (provjera Auth0 tokena, stvaranje korisnika), `backend/app/seed.py` (početne slike) | `test_auth.py`, `test_seed.py` |
+| F-002 – F-004 | UC-002 | `backend/app/workspace.py` (API za mape i slike), `backend/app/storage.py` (pohrana i provjera formata) | `test_workspace.py` |
+| F-005 – F-009 | UC-003 | Modul za obradu slika (u izradi) | na čekanju |
+| F-010 | UC-004 | `backend/app/users.py` (`PATCH /api/users/me`) | `test_profile_posts.py` |
+| F-011 – F-012 | UC-004 | `backend/app/posts.py` (postovi i kontrola vidljivosti) | `test_profile_posts.py` |
+| F-013 – F-015 | UC-005 | Pregled javnih profila i postova, API za favorite i preuzimanje slika (u izradi) | na čekanju |
+| F-016 | UC-002, UC-003 | Provjera vlasništva u `backend/app/workspace.py` (`own_folder`, `own_image`) | `test_tudja_radna_okolina_nedostupna`, `test_slika_privatnog_posta_vidi_samo_vlasnik` |
+| NF-09 | — | Docker image na Railwayu ([6.3](6-Postavljanje-instalacija-i-konfiguracija.md#63-javno-postavljanje-i-administracija)) | ručna provjera na javnoj domeni |
 
-
-Nedostajuće poveznice bit će dopunjene kad nastanu obrasci uporabe, arhitektura i ispitni slučajevi.
+Poveznice „na čekanju” dopunit će se kad se ostvare obrada slika (UC-003) i pregled tuđih stranica s favoritima (UC-005).
 
 ## 2.7 Pregled zahtjeva
 
@@ -98,6 +102,7 @@ Nedostajuće poveznice bit će dopunjene kad nastanu obrasci uporabe, arhitektur
 
 | Kontrolna točka | Povratna informacija ili nalaz | Odluka o zahtjevu ili opsegu |
 |-----------------|--------------------------------|------------------------------|
+| Generalna proba (16.11.2026.) | Obrasci uporabe nisu dovoljno detaljni; nedostaje dijagram razreda; aplikacija nije javno dostupna; nije ostvaren nijedan filtar obrade slike. | Dodan NF-09; do prve predaje ostvaruje se filtar grayscale, a slike ostaju na disku poslužitelja (AS-04). Vidi [bilješke](meeting-notes/2026-11-16-generalna-proba.md). |
 | Iteracija 1 | | |
 | Demo 2 | | |
 | Završni pregled | | |

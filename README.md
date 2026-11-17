@@ -8,13 +8,19 @@ Imagic je web platforma koja korisnicima omogućuje obradu rasterskih slika te n
 
 Imagic je namijenjen korisnicima koji žele jednostavno obraditi rasterske slike u pregledniku, spremiti ih u vlastitu privatnu radnu okolinu i po želji objaviti na javnoj stranici. Prijava se obavlja isključivo preko vanjskih OAuth 2.0 pružatelja identiteta.
 
-**Trenutačno stanje:** projekt je u početnoj fazi. Postavljeni su repozitorij, dokumentacija i početni zadaci (Issues); razvoj aplikacije je započet. Dolje navedene funkcionalnosti su **planirane** prema projektnom zadatku, a ne već ostvarene.
+**Trenutačno stanje (studeni 2026.):** aplikacija je javno postavljena i ostvaren je dio funkcionalnosti; ostatak je u izradi.
 
-**Ključne funkcionalnosti (planirano)**
+**Ostvareno**
 
-- Privatna radna okolina: upload/download slika (min. 3 formata), mape i datoteke, prikaz slike.
-- Obrada slika: filtri, morfološki operatori, geometrijske transformacije i segmentacija; rezultat se sprema kao nova datoteka ili prepisuje original.
-- Javna stranica: profil korisnika i postovi sa slikom i opisom (javni ili privatni), favoriti te preuzimanje tuđih slika u svoju radnu okolinu.
+- Prijava putem Auth0 (OAuth 2.0); pri prvoj prijavi korisnik dobiva korijensku mapu i 3 početne slike s Artic API-ja (ako API nije dostupan, koriste se ugrađene slike).
+- Privatna radna okolina: ugniježđene mape (stvaranje, preimenovanje, brisanje), upload i download slika u formatima JPEG, PNG, TIFF i WebP (do 10 MB), preimenovanje, premještanje i brisanje slika, prikaz slike (TIFF se za prikaz pretvara u PNG).
+- Javna stranica: uređivanje profila (korisničko ime, ime za prikaz, opis, URL slike) te stvaranje, uređivanje i brisanje postova s oznakom javan/privatan.
+
+**U izradi**
+
+- Obrada slika: filtri, morfološki operatori, geometrijske transformacije i segmentacija; rezultat se sprema kao nova datoteka ili prepisuje original. Prvi je u izradi filtar grayscale.
+- Pregled javnih stranica drugih korisnika, favoriti te preuzimanje tuđih slika lokalno ili u svoju radnu okolinu.
+- Galerija i pretraga djela s Artic API-ja.
 
 Za potpuni opseg, zahtjeve, oblikovanje i dokaze ispitivanja pogledajte [docs](docs/Home.md).
 
@@ -28,11 +34,11 @@ Za potpuni opseg, zahtjeve, oblikovanje i dokaze ispitivanja pogledajte [docs](d
 
 **Ograničenja:** Slike se spremaju na disk servisa (Railway volume), a ne na vanjski servis za pohranu, što je dogovoreno s asistentom za prvu predaju. Aplikacija radi na probnom planu Railwaya.
 
-Upute za postavljanje i lokalnu provjeru Docker imagea: [docs/6.3 Javno postavljanje](docs/6-Postavljanje-instalacija-i-konfiguracija.md#63-javno-postavljanje).
+Upute za postavljanje i lokalnu provjeru Docker imagea: [docs/6.3 Javno postavljanje i administracija](docs/6-Postavljanje-instalacija-i-konfiguracija.md#63-javno-postavljanje-i-administracija).
 
 ## Brzi početak / instalacija
 
-**Preduvjeti:** Python 3.12 s [uv](https://docs.astral.sh/uv/) (ili `python3-venv` i `pip`), Node.js 22 s npm-om, Docker. Detalji i česte greške: [vodič za instalaciju](docs/6-Postavljanje-instalacija-i-konfiguracija.md#61-lokalna-instalacija).
+**Preduvjeti:** Python 3.12 s [uv](https://docs.astral.sh/uv/) (ili `python3-venv` i `pip`), Node.js 22 s npm-om, Docker. Detalji i česte greške: [vodič za instalaciju](docs/6-Postavljanje-instalacija-i-konfiguracija.md#62-lokalna-instalacija-i-konfiguracija).
 
 ```bash
 git clone https://github.com/LeonIvetic/Imagic_Tim_3.2.git
@@ -62,7 +68,7 @@ Nakon svake promjene u `.env` server treba ponovno pokrenuti jer se `.env` čita
 
 **Provjera:** <http://localhost:8000/api/health> vraća `{"status":"ok"}`; dokumentacija API-ja je na <http://localhost:8000/docs>.
 
-**Konfiguracija:** Backend i frontend imaju svaki svoju datoteku s varijablama okruženja: `backend/.env.example` i `frontend/.env.example`. Svaki član ih kopira u vlastite `backend/.env` i `frontend/.env`, koje Git ignorira. Tajne vrijednosti nikada se ne objavljuju u repozitoriju. Popis varijabli nalazi se u [docs/6.2](docs/6-Postavljanje-instalacija-i-konfiguracija.md#62-konfiguracija).
+**Konfiguracija:** Backend i frontend imaju svaki svoju datoteku s varijablama okruženja: `backend/.env.example` i `frontend/.env.example`. Svaki član ih kopira u vlastite `backend/.env` i `frontend/.env`, koje Git ignorira. Tajne vrijednosti nikada se ne objavljuju u repozitoriju. Popis varijabli nalazi se u [docs/6.2](docs/6-Postavljanje-instalacija-i-konfiguracija.md#62-lokalna-instalacija-i-konfiguracija).
 
 ## Tehnologije
 
@@ -71,9 +77,10 @@ Nakon svake promjene u `.env` server treba ponovno pokrenuti jer se `.env` čita
 | React + JavaScript | Korisničko sučelje: radna okolina, prikaz slike i alati za obradu, javne stranice. | Odluka tima; SPA koja komunicira s backendom preko REST API-ja. |
 | FastAPI (Python) | Poslužiteljski API: korisnici, datoteke, mape, postovi, favoriti. | Odluka tima; REST API prema frontendu. |
 | Auth0 (OAuth 2.0) | Prijava i registracija korisnika. | Zahtjev projektnog zadatka; aplikacija ne pohranjuje lozinke. |
-| Pillow/OpenCV | Filtri, morfologija, geometrija, segmentacija. | Odluka tima; obrada slika izvodi se na backendu. |
-| PostgreSQL | Korisnici, mape, datoteke, postovi, favoriti. | Odluka tima; relacijska baza za povezane podatke korisnika. |
-| Artic API | Dohvat početnih testnih slika. | Vanjska ovisnost; aplikacija mora raditi i kad API nije dostupan. |
+| Pillow (i po potrebi OpenCV) | Prepoznavanje formata učitanih slika, pretvaranje TIFF-a u PNG za prikaz; filtri, morfologija, geometrija i segmentacija (u izradi). | Odluka tima; obrada slika izvodi se na backendu. |
+| PostgreSQL + SQLAlchemy + Alembic | Korisnici, mape, datoteke, postovi, favoriti; migracije sheme. | Odluka tima; relacijska baza za povezane podatke korisnika. |
+| Artic API | Dohvat 3 početne testne slike pri prvoj prijavi. | Vanjska ovisnost; ako API nije dostupan, koriste se ugrađene slike. |
+| Docker + Railway | Javno postavljanje: jedan Docker image (FastAPI + izgrađeni React), PostgreSQL i volume za slike. | Automatsko postavljanje pri svakom mergeu na `master`; vidi [docs/6.3](docs/6-Postavljanje-instalacija-i-konfiguracija.md#63-javno-postavljanje-i-administracija). |
 
 ## Članovi tima
 
@@ -99,7 +106,7 @@ Kod trećih strana, skupovi podataka, slike i ikone zadržavaju vlastite licence
 
 Ovaj projekt slijedi FER-ova [pravila o primjerenoj uporabi umjetne inteligencije](https://www.fer.unizg.hr/_download/repository/Policy%20on%20the%20appropriate%20use%20of%20artificial%20intelligence%20at%20the%20faculty%20of%20electrical%20engineering%20and%20computing%5B1%5D.pdf).
 
-**Izjava:** Za izradu nacrta strukture repozitorija i početnih dokumenata (README, `docs/`, popis početnih Issuea) korišten je alat Claude (Anthropic). Isti alat korišten je i za izradu CSS-a i izgleda početne (login) stranice frontenda. Detaljan zapis nalazi se u [docs/Home.md](docs/Home.md#izjava-o-uporabi-umjetne-inteligencije).
+**Izjava:** Za izradu nacrta strukture repozitorija i početnih dokumenata (README, `docs/`, popis početnih Issuea) korišten je alat Claude (Anthropic). Isti alat korišten je i za izradu CSS-a i izgleda početne (login) stranice frontenda, za dio prijave na backendu, za konfiguraciju javnog postavljanja (Docker, Railway) te za pregled i usklađivanje dokumentacije s kodom. Detaljan zapis nalazi se u [docs/Home.md](docs/Home.md#izjava-o-uporabi-umjetne-inteligencije).
 
 ## Kodeks ponašanja i podrška
 
