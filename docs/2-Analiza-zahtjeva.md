@@ -49,7 +49,7 @@
 |---------------------|---------------------|---------------------|
 | A-01 Neprijavljeni posjetitelj | Akter: može pokrenuti prijavu putem OAuth-a; nema pristup ostalim sadržajima. | F-001 |
 | A-02 Prijavljeni korisnik | Akter: koristi radnu okolinu, obrađuje slike, uređuje svoju javnu stranicu i postove. | F-002 – F-012, F-016 |
-| A-03 Prijavljeni korisnik kao posjetitelj | Akter: pregledava tuđe javne stranice, dodaje favorite, preuzima slike. | F-013 – F-015 |
+| A-03 Prijavljeni korisnik kao posjetitelj | Akter koji pregledava tuđe javne stranice i postove, dodaje i uklanja favorite te preuzima tuđe javne slike na uređaj ili ih dodaje u vlastitu radnu okolinu. | F-013 – F-015 |
 | D-01 Nositelj kolegija i asistent | Dionici (nisu akteri): zadaju opseg i ocjenjuju rad. | Cijeli opseg |
 
 ## 2.4 Ograničenja i pretpostavke
@@ -86,13 +86,19 @@
 | ID zahtjeva | Obrazac uporabe / modul | Arhitekturna realizacija | Ispitivanje ili provjera |
 |-------------|-------------------------|--------------------------|--------------------------|
 | F-001 | UC-001 | `backend/app/auth.py` (provjera Auth0 tokena, stvaranje korisnika), `backend/app/seed.py` (početne slike) | `test_auth.py`, `test_seed.py` |
-| F-002 – F-004 | UC-002 | `backend/app/workspace.py` (API za mape i slike), `backend/app/storage.py` (pohrana i provjera formata) | `test_workspace.py` |
+| F-002 | UC-002, UC-006 | `backend/app/workspace.py` (učitavanje i preuzimanje slika), `backend/app/storage.py` (pohrana i provjera formata) | `test_workspace.py` |
+| F-003 | UC-006 | `backend/app/workspace.py` (organizacija mapa i slika) | `test_workspace.py` |
+| F-004 | UC-006 | Preglednik slike u radnoj okolini | Ručna provjera prikaza odabrane slike |
 | F-005 – F-009 | UC-003 | Modul za obradu slika (u izradi) | na čekanju |
-| F-010 | UC-004 | `backend/app/users.py` (`PATCH /api/users/me`) | `test_profile_posts.py` |
-| F-011 – F-012 | UC-004 | `backend/app/posts.py` (postovi i kontrola vidljivosti) | `test_profile_posts.py` |
-| F-013 – F-015 | UC-005 | Pregled javnih profila i postova, API za favorite i preuzimanje slika (u izradi) | na čekanju |
-| F-016 | UC-002, UC-003 | Provjera vlasništva u `backend/app/workspace.py` (`own_folder`, `own_image`) | `test_tudja_radna_okolina_nedostupna`, `test_slika_privatnog_posta_vidi_samo_vlasnik` |
+| F-010 | UC-007 | `backend/app/users.py` (`PATCH /api/users/me`) | `test_profile_posts.py` |
+| F-011 – F-012 | UC-004 | `backend/app/posts.py` (postovi i kontrola vidljivosti) | `test_profile_posts.py`, `test_slika_privatnog_posta_vidi_samo_vlasnik` |
+| F-013 | UC-005 | Pregled javnih profila i postova (u izradi) | na čekanju |
+| F-014 | UC-008 | API za favorite (u izradi) | na čekanju |
+| F-015 | UC-009 | Preuzimanje tuđe javne slike i dodavanje u vlastitu radnu okolinu (u izradi) | na čekanju |
+| F-016 | UC-002, UC-003, UC-006 | Provjera vlasništva u `backend/app/workspace.py` (`own_folder`, `own_image`) | `test_tudja_radna_okolina_nedostupna` |
 | NF-09 | — | Docker image na Railwayu ([6.3](6-Postavljanje-instalacija-i-konfiguracija.md#63-javno-postavljanje-i-administracija)) | ručna provjera na javnoj domeni |
+
+Stavke označene „na čekanju” dopunit će se nakon realizacije obrade slika (UC-003), pregleda tuđeg javnog profila i objava (UC-005), upravljanja favoritima (UC-008) i preuzimanja tuđe javne slike (UC-009).
 
 Poveznice „na čekanju” dopunit će se kad se ostvare obrada slika (UC-003) i pregled tuđih stranica s favoritima (UC-005).
 
