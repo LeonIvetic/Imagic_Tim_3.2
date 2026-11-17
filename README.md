@@ -20,15 +20,15 @@ Za potpuni opseg, zahtjeve, oblikovanje i dokaze ispitivanja pogledajte [docs](d
 
 ## Postavljanje (engl. deployment)
 
-**Javno dostupna aplikacija:** [još nije postavljena]
+**Javno dostupna aplikacija:** <https://imagictim32-production.up.railway.app>
 
-**Isprobajte:** [bit će dopunjeno kad aplikacija bude postavljena]
+**Platforma:** [Railway](https://railway.com). Frontend i backend postavljeni su kao jedan Docker servis (FastAPI poslužuje i API i izgrađeni React), uz PostgreSQL bazu i volume za slike. Svaki merge na `master` automatski pokreće novo postavljanje.
 
-**Demonstracija:** Prijava je moguća samo putem OAuth 2.0 pružatelja identiteta; zasebni korisnički račun ne stvara se. [Dopuniti načinom pristupa za demonstratore.]
+**Demonstracija:** Prijava je moguća samo putem OAuth 2.0 pružatelja identiteta (Auth0); zasebni korisnički račun ne stvara se. Pri prvoj prijavi automatski se stvaraju korisnik i njegova radna okolina.
 
-**Ograničenja:** [Dopuniti poznatim ograničenjima postavljene inačice.]
+**Ograničenja:** Slike se spremaju na disk servisa (Railway volume), a ne na vanjski servis za pohranu, što je dogovoreno s asistentom za prvu predaju. Aplikacija radi na probnom planu Railwaya.
 
-Vodič: [Postavljanje, instalacija i konfiguracija](docs/6-Postavljanje-instalacija-i-konfiguracija.md).
+Upute za postavljanje i lokalnu provjeru Docker imagea: [docs/6.3 Javno postavljanje](docs/6-Postavljanje-instalacija-i-konfiguracija.md#63-javno-postavljanje).
 
 ## Brzi početak / instalacija
 
