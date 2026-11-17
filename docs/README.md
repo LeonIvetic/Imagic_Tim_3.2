@@ -47,7 +47,8 @@ Dodatni filtri/operatori, undo/redo, pretraživanje korisnika, lajkovi/komentari
 | Obrada slika | Pillow/OpenCV na backendu |
 | Dohvat slika | Art Institute of Chicago (Artic) API za početne testne slike |
 | Baza | PostgreSQL |
-| Pohrana datoteka | Disk/volumen na poslužitelju ili S3-kompatibilna pohrana |
+| Pohrana datoteka | Disk poslužitelja (Railway volume); vanjska pohrana nije potrebna do prve predaje |
+| Postavljanje | Railway (Docker image + PostgreSQL + volume) |
 | Verzioniranje | GitHub, grane + Pull Requesti, Issues, Projects board |
 
 ## 4. Prijedlog arhitekture
@@ -59,7 +60,7 @@ React SPA  <--REST/JSON-->  FastAPI  <-->  PostgreSQL (korisnici, mape, datoteke
                                +--> Auth0 (OAuth 2.0), Artic API
 ```
 
-Glavni modeli podataka: `User`, `Folder` (parent_id), `ImageFile` (folder_id, naziv, format, putanja), `Post` (user_id, image_id, tekst, is_public), `FavoritePost`, `FavoriteProfile`.
+Glavni modeli podataka: `User`, `Folder` (parent_id), `ImageFile` (folder_id, naziv, format, putanja), `Post` (user_id, image_id, opis, is_public), `FavoritePost`, `FavoriteProfile`. Konačni model opisan je u [docs/4.3](4-Arhitektura-i-oblikovanje.md#43-model-podataka-i-oblikovanje-razreda).
 
 ## 5. Prijedlog podjele tima (7 članova)
 
@@ -71,10 +72,10 @@ Glavni modeli podataka: `User`, `Folder` (parent_id), `ImageFile` (folder_id, na
 | Frontend – radna okolina | 1–2 | stablo mapa, prikaz slike, alati |
 | Javna stranica + favoriti | 1–2 | postovi, privatno/javno, favoriti, preuzimanje |
 
-## 6. Otvorena pitanja za asistenta
+## 6. Pitanja za asistenta (odgovoreno)
 
-1. Je li potrebno **deployanje** (npr. Render/Fly/VM) ili je dovoljno lokalno pokretanje (Docker Compose)?
-2. Je li dopuštena **vlastita baza** (PostgreSQL) i pohrana na disku, ili se traži cloud pohrana?
+1. Je li potrebno **deployanje** ili je dovoljno lokalno pokretanje? **Odgovor:** aplikacija mora biti javno dostupna; postavljena je na Railway ([docs/6.3](6-Postavljanje-instalacija-i-konfiguracija.md#63-javno-postavljanje-i-administracija)).
+2. Je li dopuštena **vlastita baza** (PostgreSQL) i pohrana na disku, ili se traži cloud pohrana? **Odgovor:** PostgreSQL je u redu, a slike do prve predaje smiju ostati na disku poslužitelja ([sastanak 16.11.2026.](meeting-notes/2026-11-16-generalna-proba.md)).
 
 ## 7. Radni proces na GitHubu
 
