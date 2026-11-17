@@ -1,0 +1,11 @@
+# Ne kopirati u Docker image: lokalne ovisnosti, tajne i slike s lokalnog diska.
+**/node_modules
+**/dist
+**/__pycache__
+**/*.pyc
+**/venv
+**/.venv
+**/.env
+backend/uploads
+.git
+docs

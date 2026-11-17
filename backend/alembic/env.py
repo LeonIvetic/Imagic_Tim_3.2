@@ -7,15 +7,16 @@ from alembic import context
 
 import os
 from dotenv import load_dotenv
-from app.db import Base
-from app import models   
+from app.db import Base, DATABASE_URL
+from app import models
 
 load_dotenv()
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL"))
+# Isti (normalizirani) URL kao aplikacija, vidi app/db.py.
+config.set_main_option("sqlalchemy.url", DATABASE_URL.replace("%", "%%"))  # % bi configparser shvatio kao interpolaciju
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
