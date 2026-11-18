@@ -92,8 +92,9 @@
 | F-002 | UC-002, UC-006, UC-010 | `backend/app/workspace.py` (učitavanje i preuzimanje slika), `backend/app/storage.py` (pohrana i provjera formata) | `test_workspace.py` |
 | F-003 | UC-006 | `backend/app/workspace.py` (organizacija mapa i slika) | `test_workspace.py` |
 | F-004 | UC-006 | Preglednik slike u radnoj okolini | Ručna provjera prikaza odabrane slike |
-| F-005 – F-008 | UC-003 | Modul za obradu slika (u izradi) | na čekanju |
-| F-009 | UC-003, UC-010 | Modul za obradu slika (u izradi), `backend/app/storage.py` (pohrana rezultata) | na čekanju |
+| F-005 | UC-003 | `backend/app/filters.py` (5 filtara u Pillowu: grayscale, invert, pixelate, blur, derivative), `POST /api/images/{id}/filters` u `backend/app/workspace.py`, odabir i pregled filtara u `frontend/src/pages/ImageViewer.jsx` | `test_filter_preview` (`test_workspace.py`) |
+| F-006 – F-008 | UC-003 | Morfološki operatori, geometrijske transformacije i segmentacija (u izradi) | na čekanju |
+| F-009 | UC-003, UC-010 | `POST /api/images/{id}/filters` (`action`: `copy` ili `overwrite`) u `backend/app/workspace.py`, `backend/app/storage.py` (pohrana rezultata) | `test_filter_copy_and_overwrite` (`test_workspace.py`) |
 | F-010 | UC-007 | `backend/app/users.py` (`PATCH /api/users/me`) | `test_profile_posts.py` |
 | F-011 – F-012 | UC-004 | `backend/app/posts.py` (postovi i kontrola vidljivosti) | `test_profile_posts.py`, `test_slika_privatnog_posta_vidi_samo_vlasnik` |
 | F-013 | UC-005 | Pregled javnih profila i postova (u izradi) | na čekanju |
@@ -103,7 +104,7 @@
 | F-017 | UC-011, UC-010 | Artic galerija (u izradi; stranica `frontend/src/pages/ArticGallery.jsx`) | na čekanju |
 | NF-09 | — | Docker image na Railwayu ([6.3](6-Postavljanje-instalacija-i-konfiguracija.md#63-javno-postavljanje-i-administracija)) | ručna provjera na javnoj domeni |
 
-Stavke označene „na čekanju” dopunit će se nakon realizacije obrade slika (UC-003), pregleda tuđeg javnog profila i objava (UC-005), upravljanja favoritima (UC-008), preuzimanja tuđe javne slike (UC-009) i Artic galerije (UC-011).
+Stavke označene „na čekanju” dopunit će se nakon realizacije morfoloških operatora, geometrijskih transformacija i segmentacije (UC-003), pregleda tuđeg javnog profila i objava (UC-005), upravljanja favoritima (UC-008), preuzimanja tuđe javne slike (UC-009) i Artic galerije (UC-011).
 
 ## 2.7 Pregled zahtjeva
 
@@ -111,7 +112,7 @@ Stavke označene „na čekanju” dopunit će se nakon realizacije obrade slika
 
 | Kontrolna točka | Povratna informacija ili nalaz | Odluka o zahtjevu ili opsegu |
 |-----------------|--------------------------------|------------------------------|
-| Generalna proba (16.11.2026.) | Obrasci uporabe nisu dovoljno detaljni; nedostaje dijagram razreda; aplikacija nije javno dostupna; nije ostvaren nijedan filtar obrade slike. | Dodan NF-09; do prve predaje ostvaruje se filtar grayscale, a slike ostaju na disku poslužitelja (AS-04). Vidi [bilješke](meeting-notes/2026-11-16-generalna-proba.md). |
+| Generalna proba (16.11.2026.) | Obrasci uporabe nisu dovoljno detaljni; nedostaje dijagram razreda; aplikacija nije javno dostupna; nije ostvaren nijedan filtar obrade slike. | Dodan NF-09; do prve predaje ostvaruje se filtar grayscale, a slike ostaju na disku poslužitelja (AS-04). Do prve predaje ostvareno je svih 5 filtara iz F-005 sa spremanjem rezultata kao nove datoteke ili prepisivanjem izvorne (F-009), a aplikacija je javno dostupna (NF-09). Vidi [bilješke](meeting-notes/2026-11-16-generalna-proba.md). |
 | Iteracija 1 | | |
 | Demo 2 | | |
 | Završni pregled | | |
