@@ -22,7 +22,6 @@ export default function ImageViewer() {
 
 // Preglednik slike (F-004): slika, podaci o datoteci, preuzimanje.
 function ImageViewerPage({ imageId }) {
-  const { imageId } = useParams()
   const data = useData()
   const navigate = useNavigate()
   const [image, setImage] = useState(null)
