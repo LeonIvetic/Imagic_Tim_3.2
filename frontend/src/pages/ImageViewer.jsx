@@ -54,12 +54,26 @@ function ImageViewerPage({ imageId }) {
     setFilterError(null)
     try {
       const blob = await data.previewFilters(image.id, request)
-      setDraft({ request, blob })
+      // Blob svakog koraka čuvamo da poništavanje ne treba novi zahtjev.
+      setDraft({ request, blobs: [...(draft?.blobs ?? []), blob] })
     } catch (err) {
       setFilterError(err.message)
     } finally {
       setFilterBusy(false)
     }
+  }
+
+  // Poništava zadnji filtar; nakon prvog se vraća prikaz izvorne slike.
+  function undoFilter() {
+    setFilterError(null)
+    if (draft.request.filters.length === 1) {
+      setDraft(null)
+      return
+    }
+    setDraft({
+      request: { ...draft.request, filters: draft.request.filters.slice(0, -1) },
+      blobs: draft.blobs.slice(0, -1),
+    })
   }
 
   async function saveFilterResult(action, name) {
@@ -109,7 +123,7 @@ function ImageViewerPage({ imageId }) {
 
       <div className="viewer__layout">
         <figure className={`viewer__stage ${fit ? 'viewer__stage--fit' : ''}`}>
-          {draft ? <DraftImage blob={draft.blob} name={image.name} /> : <ViewerImage image={image} />}
+          {draft ? <DraftImage blob={draft.blobs[draft.blobs.length - 1]} name={image.name} /> : <ViewerImage image={image} />}
         </figure>
 
         <aside className="viewer__side">
@@ -161,6 +175,9 @@ function ImageViewerPage({ imageId }) {
             </button>
             {draft && (
               <>
+                <button className="btn btn--secondary" onClick={undoFilter} disabled={filterBusy}>
+                  Poništi zadnji filtar
+                </button>
                 <button className="btn btn--secondary" onClick={() => setDialog('save-copy')} disabled={filterBusy}>
                   Spremi kao novu sliku
                 </button>
@@ -176,6 +193,11 @@ function ImageViewerPage({ imageId }) {
               </>
             )}
           </div>
+          {draft && (
+            <p className="viewer__note">
+              Primijenjeno: {draft.request.filters.map((name) => FILTERS[name]).join(' → ')}
+            </p>
+          )}
           {filterError && <p className="field-error" role="alert">{filterError}</p>}
         </aside>
       </div>
