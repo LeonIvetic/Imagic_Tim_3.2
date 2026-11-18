@@ -83,6 +83,11 @@ class ImageFilterRequest(BaseModel):
     name: str | None = Field(default=None, max_length=255)
 
 
+# Slika se prepisuje pod istim URL-om (filteri), pa preglednik mora svaki put
+# provjeriti ETag kod servera umjesto da prikaže staru kopiju iz cachea.
+NO_CACHE = {"Cache-Control": "no-cache"}
+
+
 # ---------- Pomoćne funkcije ----------
 
 def clean_name(name: str) -> str:
@@ -182,11 +187,11 @@ def unique_image_name(db: Session, folder_id: int, name: str) -> str:
     while True:
         marker = f" ({i})"
         available = 255 - len(marker) - len(suffix)
-        if avilable > 0:
-            candidate = f"{stem:[:available]}{marker}{suffix}"
+        if available > 0:
+            candidate = f"{stem[:available]}{marker}{suffix}"
         else:
             candidate = f"{name[:255 - len(marker)]}{marker}"
-        if not name_token_image(db, folder_id, candidate):
+        if not name_taken_image(db, folder_id, candidate):
             return candidate
         i += 1
         
@@ -325,8 +330,8 @@ def preview_response(image: ImageFile) -> Response:
         path = storage.absolute(image.file_path)
         if not path.exists():
             raise HTTPException(404, "Datoteka slike nije pronađena.")
-        return FileResponse(path, media_type=storage.MIME_BY_FORMAT[image.format])
-    return Response(storage.browser_preview(image.file_path), media_type="image/png")
+        return FileResponse(path, media_type=storage.MIME_BY_FORMAT[image.format], headers=NO_CACHE)
+    return Response(storage.browser_preview(image.file_path), media_type="image/png", headers=NO_CACHE)
 
 
 @router.post("/images", response_model=ImageOut, status_code=201)
@@ -369,6 +374,7 @@ def image_file(
         path,
         media_type=storage.MIME_BY_FORMAT[image.format],
         filename=image.name if download else None,
+        headers=NO_CACHE,
     )
 
 
@@ -377,7 +383,7 @@ def image_preview(image_id: int, user: User = Depends(get_current_user), db: Ses
     """Slika za prikaz u pregledniku; TIFF se pretvara u PNG."""
     return preview_response(own_image(db, user, image_id))
 
-@router.post("/images/{image_id}/filters")
+@router.post("/images/{image_id}/filters", response_model=ImageOut)
 def filter_image(
     # IZMIJENJUJE ORIGINALNU SLIKU PRI SPREMANJU
     image_id: int,

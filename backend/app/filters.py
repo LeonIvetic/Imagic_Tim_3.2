@@ -23,7 +23,7 @@ def working_image(image: Image.Image) -> Image.Image:
         transparent=image.info.get("transparency")
         gray = image.point(lambda value: value * (255 / 65535)).convert("L") # '/' is true division
         if transparent is not None:
-            alpha = ImageMath.lamba_eval(
+            alpha = ImageMath.lambda_eval(
                 lambda args: (args["pixels"] != transparent) * 255,
                 pixels=image.convert("I"),
             ).convert("L")
