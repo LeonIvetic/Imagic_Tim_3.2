@@ -67,6 +67,7 @@ Slijedi FER-ova [pravila o primjerenoj uporabi umjetne inteligencije](https://ww
 | Claude (Anthropic) | Claude Opus 5.5 (Claude Code) | Leon Ivetić | Izrada CSS-a i izgleda početne (login) stranice frontenda |
 | Claude (Anthropic) | Claude Sonnet 5.5 | Feđa Mitić | Prijava na backendu |
 | Claude (Anthropic) | Claude Opus 5.5 (Claude Code) | Leon Ivetić | Konfiguracija javnog postavljanja (Docker, Railway), upute za postavljanje, bilješke sa sastanka 16.11.2026. i pregled dokumentacije |
+| Claude (Anthropic) | Claude Sonnet 5.5 | Feđa Mitić | Implementacija svih 5 filtara za slike (greyscale, invert, pixelate, blur, derivative), backend i frontend funkcionalnosti |
 
 ### Opseg doprinosa umjetne inteligencije
 

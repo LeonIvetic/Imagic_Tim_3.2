@@ -1,12 +1,27 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useData } from '../data/useData.js'
 import { downloadImage, formatBytes, useImageUrl } from '../data/images.js'
 import Dialog, { NameDialog } from '../components/Dialog.jsx'
 import './Workspace.css'
 
-// Preglednik slike (F-004): slika, podaci o datoteci, preuzimanje.
+const FILTERS = {
+  grayscale: 'Crno-bijelo',
+  invert: 'Invertiranje',
+  pixelate: 'Pikselizacija',
+  blur: 'Zamućenje',
+  derivative: 'Derivacija'
+}
+
+const EXTENSIONS = { jpeg: 'jpg', png: 'png', tiff: 'tif', webp: 'webp' }
+
 export default function ImageViewer() {
+  const { imageId } = useParams()
+  return <ImageViewerPage key={imageId} imageId={imageId} />
+}
+
+// Preglednik slike (F-004): slika, podaci o datoteci, preuzimanje.
+function ImageViewerPage({ imageId }) {
   const { imageId } = useParams()
   const data = useData()
   const navigate = useNavigate()
@@ -14,6 +29,10 @@ export default function ImageViewer() {
   const [error, setError] = useState(null)
   const [fit, setFit] = useState(true)
   const [dialog, setDialog] = useState(null)
+  const [selectedFilter, setSelectedFilter] = useState('grayscale')
+  const [draft, setDraft] = useState(null)
+  const [filterBusy, setFilterBusy] = useState(false)
+  const [filterError, setFilterError] = useState(null)
 
   useEffect(() => {
     let cancelled = false
@@ -26,6 +45,35 @@ export default function ImageViewer() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageId, data.version])
+
+  async function previewFilter() {
+    const request = {
+      filters: [...(draft?.request.filters ?? []), selectedFilter],
+      source_updated_at: draft?.request.source_updated_at ?? image.updated_at,
+    }
+    setFilterBusy(true)
+    setFilterError(null)
+    try {
+      const blob = await data.previewFilters(image.id, request)
+      setDraft({ request, blob })
+    } catch (err) {
+      setFilterError(err.message)
+    } finally {
+      setFilterBusy(false)
+    }
+  }
+
+  async function saveFilterResult(action, name) {
+    setFilterBusy(true)
+    try {
+      const saved = await data.saveFilters(image.id, { ...draft.request, action, name })
+      setDraft(null)
+      setFilterError(null)
+      if (action === 'copy') navigate(`/slika/${saved.id}`)
+    } finally {
+      setFilterBusy(false)
+    }
+  }
 
   if (error) {
     return (
@@ -40,6 +88,9 @@ export default function ImageViewer() {
   if (!image) return <div className="ws-state">Učitavanje…</div>
 
   const folder = image.path[image.path.length - 1]
+
+  const stem = image.name.replace(/\.[^.]+$/, '') || 'slika'
+  const copyName = `${stem.slice(0, 240)}-obrada.${EXTENSIONS[image.format]}`
 
   return (
     <div className="viewer">
@@ -59,7 +110,7 @@ export default function ImageViewer() {
 
       <div className="viewer__layout">
         <figure className={`viewer__stage ${fit ? 'viewer__stage--fit' : ''}`}>
-          <ViewerImage image={image} />
+          {draft ? <DraftImage blob={draft.blob} name={image.name} /> : <ViewerImage image={image} />}
         </figure>
 
         <aside className="viewer__side">
@@ -99,7 +150,34 @@ export default function ImageViewer() {
             </button>
           </div>
 
-          <p className="viewer__note">Alati za obradu slike (filtri, morfologija, geometrija, segmentacija) dolaze u sljedećoj iteraciji.</p>
+          <label className="field">
+            <span className="field__label">Filtar</span>
+            <select className="input" value={selectedFilter} onChange={(e) => setSelectedFilter(e.target.value)} disabled={filterBusy}>
+              {Object.entries(FILTERS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select>
+          </label>
+          <div className="viewer__actions">
+            <button className="btn btn--primary" onClick={previewFilter} disabled={filterBusy}>
+              {filterBusy ? 'Obrada…' : 'Primijeni filtar'}
+            </button>
+            {draft && (
+              <>
+                <button className="btn btn--secondary" onClick={() => setDialog('save-copy')} disabled={filterBusy}>
+                  Spremi kao novu sliku
+                </button>
+                <button className="btn btn--secondary" onClick={() => setDialog('overwrite')} disabled={filterBusy}>
+                  Prepiši izvornik
+                </button>
+                <button className="btn btn--ghost" disabled={filterBusy} onClick={() => {
+                  setDraft(null)
+                  setFilterError(null)
+                }}>
+                  Odbaci obradu
+                </button>
+              </>
+            )}
+          </div>
+          {filterError && <p className="field-error" role="alert">{filterError}</p>}
         </aside>
       </div>
 
@@ -111,6 +189,26 @@ export default function ImageViewer() {
           onSubmit={(name) => data.renameImage(image.id, name)}
           onClose={() => setDialog(null)}
         />
+      )}
+      {dialog === 'save-copy' && (
+        <NameDialog
+          title="Spremi kao novu sliku"
+          label="Naziv nove datoteke"
+          initial={copyName}
+          onSubmit={(name) => saveFilterResult('copy', name)}
+          onClose={() => setDialog(null)}
+        />
+      )}
+      {dialog === 'overwrite' && (
+        <Dialog
+          title="Prepisati izvornu sliku?"
+          submitLabel="Prepiši izvornik"
+          danger
+          onSubmit={() => saveFilterResult('overwrite')}
+          onClose={() => setDialog(null)}
+        >
+          <p>Obrađena slika zamijenit će izvornu i prikazivat će se u postojećim objavama koje je koriste.</p>
+        </Dialog>
       )}
       {dialog === 'delete' && (
         <Dialog
@@ -137,4 +235,14 @@ function ViewerImage({ image }) {
   if (error) return <p role="alert">{error}</p>
   if (!url) return <span className="viewer__loading">Učitavanje slike…</span>
   return <img src={url} alt={image.name} />
+}
+
+function DraftImage({ blob, name }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    const url = URL.createObjectURL(blob)
+    ref.current.src = url
+    return () => URL.revokeObjectURL(url)
+  }, [blob])
+  return <img ref={ref} alt={`Pregled obrade slike ${name}`} />
 }

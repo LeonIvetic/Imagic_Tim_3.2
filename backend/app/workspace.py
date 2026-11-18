@@ -5,6 +5,7 @@ slika vraća 404, jednako kao nepostojeća, da se ne otkriva njezino postojanje 
 """
 from datetime import datetime
 from pathlib import PurePath
+from typing import Literal
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Response, UploadFile
 from fastapi.responses import FileResponse
@@ -12,6 +13,8 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from PIL import Image
+from app.filters import FilterName, MultiFrameImage, render_filters
 
 from app import storage
 from app.auth import get_current_user
@@ -72,6 +75,12 @@ class FolderUpdate(BaseModel):
 class ImageUpdate(BaseModel):
     name: str | None = Field(default=None, max_length=255)
     folder_id: int | None = None
+    
+class ImageFilterRequest(BaseModel):
+    filters: list[FilterName] = Field(min_length=1)
+    source_updated_at: datetime
+    action: Literal["preview", "copy", "overwrite"]
+    name: str | None = Field(default=None, max_length=255)
 
 
 # ---------- Pomoćne funkcije ----------
@@ -110,15 +119,18 @@ def own_folder(db: Session, user: User, folder_id: int) -> Folder:
     return folder
 
 
-def own_image(db: Session, user: User, image_id: int) -> ImageFile:
+def own_image(db: Session, user: User, image_id: int, *, lock: bool = False) -> ImageFile:
     # Vlasnik slike je vlasnik njezine mape (docs/4).
-    image = db.scalar(
+    query = (
         select(ImageFile)
         .join(Folder, ImageFile.folder_id == Folder.id)
         .where(ImageFile.id == image_id, Folder.owner_id == user.id)
     )
+    if lock:
+        query = query.with_for_update(of=ImageFile)
+    image = db.scalar(query)
     if image is None:
-        raise HTTPException(404, "Slika ne postoji.")
+        raise HTTPException(404, "Slika ne postoji")
     return image
 
 
@@ -167,10 +179,17 @@ def unique_image_name(db: Session, folder_id: int, name: str) -> str:
     p = PurePath(name)
     stem, suffix = p.stem, p.suffix
     i = 1
-    while name_taken_image(db, folder_id, f"{stem} ({i}){suffix}"):
+    while True:
+        marker = f" ({i})"
+        available = 255 - len(marker) - len(suffix)
+        if avilable > 0:
+            candidate = f"{stem:[:available]}{marker}{suffix}"
+        else:
+            candidate = f"{name[:255 - len(marker)]}{marker}"
+        if not name_token_image(db, folder_id, candidate):
+            return candidate
         i += 1
-    return f"{stem} ({i}){suffix}"
-
+        
 
 def store_image(db: Session, folder: Folder, name: str, data: bytes) -> ImageFile:
     """Provjeri i spremi sliku u mapu. Koristi se za upload i za početne slike."""
@@ -183,10 +202,11 @@ def store_image(db: Session, folder: Folder, name: str, data: bytes) -> ImageFil
     except storage.InvalidImage as e:
         raise HTTPException(415, str(e))
 
+    name = unique_image_name(db, folder.id, clean_name(name))
     rel = storage.save(data, fmt)
     image = ImageFile(
         folder_id=folder.id,
-        name=unique_image_name(db, folder.id, clean_name(name)),
+        name=name,
         format=fmt,
         size_bytes=len(data),
         file_path=rel,
@@ -276,7 +296,9 @@ def delete_folder(folder_id: int, user: User = Depends(get_current_user), db: Se
 
     # Baza kaskadno briše podmape i zapise slika, a datoteke s diska brišemo sami.
     ids = descendant_ids(db, user, folder.id)
-    files = db.scalars(select(ImageFile.file_path).where(ImageFile.folder_id.in_(ids))).all()
+    files = db.scalars(
+        select(ImageFile.file_path).where(ImageFile.folder_id.in_(ids)).with_for_update()
+        ).all()
     db.delete(folder)
     db.commit()
     for rel in files:
@@ -355,6 +377,56 @@ def image_preview(image_id: int, user: User = Depends(get_current_user), db: Ses
     """Slika za prikaz u pregledniku; TIFF se pretvara u PNG."""
     return preview_response(own_image(db, user, image_id))
 
+@router.post("/images/{image_id}/filters")
+def filter_image(
+    # IZMIJENJUJE ORIGINALNU SLIKU PRI SPREMANJU
+    image_id: int,
+    body: ImageFilterRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    preview = body.action == "preview"
+    image = own_image(db, user, image_id, lock=not preview)
+    if image.updated_at != body.source_updated_at:
+        raise HTTPException(409, "Slika je u međuvremenu izmijenjena. Osvježi stranicu pa ponovi obradu.")
+    
+    name = clean_name(body.name or "") if body.action == "copy" else None
+    old_path = image.file_path
+    try:
+        result = render_filters(storage.absolute(old_path), body.filters, preview=preview)
+    except FileNotFoundError as exc:
+        raise HTTPException(404, "Datoteka slike nije pronađena.") from exc
+    except MultiFrameImage as exc:
+        raise HTTPException(422, str(exc)) from exc
+    except (OSError, SyntaxError, Image.DecompressionBombError) as exc:
+        raise HTTPException(422, "Datoteku slike nije moguće obraditi.") from exc
+    
+    if preview:
+        fmt = "png" if image.format == "tiff" else image.format
+        return Response(result, media_type=storage.MIME_BY_FORMAT[fmt], headers={"Cache-Control": "no-store"})
+
+    if len(result) > storage.MAX_BYTES:
+        raise HTTPException(413, "Obrađena slika je veća od 10 MB.")
+    
+    if name is not None:
+        try:
+            return store_image(db, db.get(Folder, image.folder_id), name, result)
+        except IntegrityError as exc:
+            raise HTTPException(409, "Spremanje nije uspjelo. Pokušaj ponovno.") from exc
+        
+    new_path = storage.save(result, image.format)
+    image.file_path = new_path
+    image.size_bytes = len(result)
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        storage.delete(new_path)
+        raise
+    storage.delete(old_path)
+    db.refresh(image)
+    return image
+
 
 @router.patch("/images/{image_id}", response_model=ImageOut)
 def update_image(image_id: int, body: ImageUpdate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -373,7 +445,7 @@ def update_image(image_id: int, body: ImageUpdate, user: User = Depends(get_curr
 
 @router.delete("/images/{image_id}", status_code=204)
 def delete_image(image_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    image = own_image(db, user, image_id)
+    image = own_image(db, user, image_id, lock=True)
     rel = image.file_path
     db.delete(image)  # postovi sa slikom brišu se kaskadno (docs/4)
     db.commit()
