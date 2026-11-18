@@ -10,6 +10,8 @@
 
 **PlantUML izvor:** [obrasci-uporabe.puml](obrasci-uporabe.puml)
 
+Primarni akteri (A-01, A-02) nalaze se lijevo, a vanjski sustavi s kojima Imagic komunicira (Auth0, Artic API) desno. Veza `<<include>>` označava ponašanje koje se uvijek izvodi kao dio osnovnog obrasca. UC-010 Spremanje slike u radnu okolinu zajednički je korak obrazaca UC-002, UC-003 i UC-011. Veza `<<extend>>` označava neobavezno ponašanje koje korisnik može pokrenuti iz osnovnog obrasca. Tako se iz pregleda tuđeg javnog profila (UC-005) profil ili post može dodati u favorite (UC-008), a slika iz javnog posta preuzeti (UC-009).
+
 ## 3.2 Specifikacije obrazaca uporabe
 
 **Cilj:** Povezati obrasce uporabe iz dijagrama s akterima i funkcijskim zahtjevima.
@@ -22,17 +24,19 @@ Akteri su opisani u [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-ak
 | UC-002 | Učitavanje slike | A-02 Prijavljeni korisnik | F-002, F-016 |
 | UC-003 | Obrada slike | A-02 Prijavljeni korisnik | F-005 – F-009, F-016 |
 | UC-004 | Objava posta | A-02 Prijavljeni korisnik | F-011 – F-012 |
-| UC-005 | Pregled tuđeg javnog profila i objava | A-03 Prijavljeni korisnik kao posjetitelj | F-013 |
+| UC-005 | Pregled tuđeg javnog profila i objava | A-02 Prijavljeni korisnik | F-013 |
 | UC-006 | Organizacija slika u radnoj okolini | A-02 Prijavljeni korisnik | F-002 – F-004, F-016 |
 | UC-007 | Uređivanje vlastitog profila | A-02 Prijavljeni korisnik | F-010 |
-| UC-008 | Upravljanje favoritima | A-03 Prijavljeni korisnik kao posjetitelj | F-014 |
-| UC-009 | Preuzimanje tuđe javne slike | A-03 Prijavljeni korisnik kao posjetitelj | F-015 |
+| UC-008 | Upravljanje favoritima | A-02 Prijavljeni korisnik | F-014 |
+| UC-009 | Preuzimanje tuđe javne slike | A-02 Prijavljeni korisnik | F-015 |
+| UC-010 | Spremanje slike u radnu okolinu | — (uključuju ga UC-002, UC-003, UC-011) | F-002, F-009, F-016 |
+| UC-011 | Dodavanje djela iz Artic galerije | A-02 Prijavljeni korisnik; S-02 Artic API | F-017 |
 
 ## 3.3 Opisi obrazaca uporabe
 
 ### UC-001 Prijava putem OAuth 2.0
 
-**Akter:** A-01 Neprijavljeni posjetitelj
+**Akter:** A-01 Neprijavljeni posjetitelj; vanjski sustav S-01 Auth0
 
 **Preduvjeti**
 
@@ -74,7 +78,7 @@ Akteri su opisani u [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-ak
 1. Korisnik odabire opciju za učitavanje slike.
 2. Korisnik odabire datoteku sa svojeg uređaja i potvrđuje učitavanje.
 3. Sustav provjerava format i veličinu datoteke.
-4. Sustav pohranjuje sliku u korisnikovu privatnu radnu okolinu.
+4. Sustav pohranjuje sliku u korisnikovu privatnu radnu okolinu (uključuje UC-010).
 5. Sustav prikazuje učitanu sliku u popisu datoteka.
 
 **Alternativni tijekovi**
@@ -102,7 +106,7 @@ Akteri su opisani u [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-ak
 3. Sustav primjenjuje postupak i prikazuje rezultat obrade.
 4. Korisnik prema potrebi nastavlja obradu ponavljanjem koraka od 1 do 3.
 5. Korisnik odabire spremanje rezultata kao nove datoteke i unosi njezin naziv.
-6. Sustav pohranjuje rezultat kao novu datoteku u korisnikovoj radnoj okolini.
+6. Sustav pohranjuje rezultat kao novu datoteku u korisnikovoj radnoj okolini (uključuje UC-010).
 
 **Alternativni tijekovi**
 
@@ -146,7 +150,7 @@ Akteri su opisani u [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-ak
 
 ### UC-005 Pregled tuđeg javnog profila i objava
 
-**Akter:** A-03 Prijavljeni korisnik kao posjetitelj
+**Akter:** A-02 Prijavljeni korisnik
 
 **Preduvjeti**
 
@@ -230,7 +234,9 @@ Akteri su opisani u [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-ak
 
 ### UC-008 Upravljanje favoritima
 
-**Akter:** A-03 Prijavljeni korisnik kao posjetitelj
+**Akter:** A-02 Prijavljeni korisnik
+
+**Odnos:** proširuje (`<<extend>>`) UC-005. Korisnik dodavanje u favorite može pokrenuti tijekom pregleda tuđeg javnog profila ili posta (UC-005, korak 4). Popisu favorita može pristupiti i izravno.
 
 **Preduvjeti**
 
@@ -257,7 +263,9 @@ Akteri su opisani u [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-ak
 
 ### UC-009 Preuzimanje tuđe javne slike
 
-**Akter:** A-03 Prijavljeni korisnik kao posjetitelj
+**Akter:** A-02 Prijavljeni korisnik
+
+**Odnos:** proširuje (`<<extend>>`) UC-005. Korisnik preuzimanje pokreće tijekom pregleda tuđeg javnog posta koji sadrži sliku (UC-005, korak 4). Alternativni tijek A1 sprema kopiju u radnu okolinu, ali nije dio glavnog tijeka, pa obrazac ne uključuje UC-010.
 
 **Preduvjeti**
 
@@ -280,6 +288,60 @@ Akteri su opisani u [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-ak
 
 - Nakon uspješnog preuzimanja korisnik ima lokalnu kopiju slike.
 - Nakon uspješnog dodavanja u radnu okolinu korisnik ima kopiju slike u svojoj privatnoj radnoj okolini.
+
+### UC-010 Spremanje slike u radnu okolinu
+
+**Akter:** nema izravnog aktera. Obrazac je uključen (`<<include>>`) u UC-002 Učitavanje slike, UC-003 Obrada slike i UC-011 Dodavanje djela iz Artic galerije.
+
+**Preduvjeti**
+
+- Korisnik je prijavljen.
+- Osnovni obrazac predao je sadržaj slike, njezin naziv i odredišnu mapu u korisnikovoj radnoj okolini.
+
+**Glavni tijek**
+
+1. Sustav provjerava pripada li odredišna mapa prijavljenom korisniku.
+2. Sustav provjerava format slike prema stvarnom sadržaju datoteke i njezinu veličinu.
+3. Sustav sprema datoteku na disk poslužitelja i u bazi bilježi njezin naziv, format, veličinu i mapu.
+4. Sustav vraća podatke o spremljenoj slici osnovnom obrascu.
+
+**Alternativni tijekovi**
+
+- **A1 – Format nije podržan ili datoteka prelazi dopuštenu veličinu.** Sustav ne sprema datoteku i osnovnom obrascu vraća razlog odbijanja.
+- **A2 – Odredišna mapa ne pripada korisniku ili ne postoji.** Sustav odbija spremanje.
+
+**Postuvjeti**
+
+- Nakon uspješnog spremanja slika je vidljiva samo vlasniku u njegovoj radnoj okolini.
+- Ako spremanje ne uspije, u radnoj okolini ne nastaje nova datoteka.
+
+### UC-011 Dodavanje djela iz Artic galerije
+
+**Akter:** A-02 Prijavljeni korisnik; vanjski sustav S-02 Artic API
+
+**Preduvjeti**
+
+- Korisnik je prijavljen i otvorio je stranicu Artic galerije.
+
+**Glavni tijek**
+
+1. Korisnik upisuje pojam za pretragu.
+2. Sustav šalje upit Artic API-ju i prikazuje popis pronađenih djela iz javne domene s pregledom slike i nazivom djela.
+3. Korisnik odabire djelo i opciju za dodavanje u radnu okolinu.
+4. Sustav dohvaća sliku djela s Artic API-ja.
+5. Sustav sprema sliku u korisnikovu radnu okolinu (uključuje UC-010).
+6. Sustav obavještava korisnika da je djelo dodano.
+
+**Alternativni tijekovi**
+
+- **A1 – Nema rezultata.** Sustav prikazuje poruku da za zadani pojam nije pronađeno nijedno djelo.
+- **A2 – Artic API nije dostupan.** Sustav prikazuje poruku da galerija trenutačno nije dostupna; radna okolina ostaje nepromijenjena.
+- **A3 – Korisnik odustaje.** Korisnik napušta galeriju bez dodavanja djela.
+
+**Postuvjeti**
+
+- Nakon uspješnog dodavanja slika djela nalazi se u korisnikovoj privatnoj radnoj okolini.
+- Ako dodavanje ne uspije ili korisnik odustane, radna okolina ostaje nepromijenjena.
 
 ## 3.4 Provjera dosljednosti obrazaca uporabe
 

@@ -24,6 +24,7 @@
 | F-014 | Korisnik može dodati u favorite pojedini post ili cijelu javnu stranicu drugog korisnika. | Srednji | Odobreni zadatak | Odabrani post ili stranica pojavljuje se na popisu favorita i može se ukloniti. |
 | F-015 | Korisnik može sliku s tuđe javne stranice preuzeti lokalno ili dodati u svoju radnu okolinu. | Srednji | Odobreni zadatak | Preuzeta slika otvara se lokalno; dodana slika pojavljuje se u radnoj okolini korisnika. |
 | F-016 | Radna okolina je privatna: njezin sadržaj vidljiv je samo vlasniku. | Visok | Odobreni zadatak | Drugi prijavljeni korisnik ne može dohvatiti slike ni mape tuđe radne okoline. |
+| F-017 | Korisnik može pretraživati djela iz javne domene u Artic galeriji (Art Institute of Chicago) i odabrano djelo dodati u svoju radnu okolinu. | Srednji | Odluka tima | Pretraga po pojmu prikazuje popis djela s pregledom slike; dodano djelo pojavljuje se u radnoj okolini korisnika. |
 
 ## 2.2 Nefunkcijski zahtjevi
 
@@ -48,8 +49,9 @@
 | ID uloge ili aktera | Odnos prema sustavu | Relevantni zahtjevi |
 |---------------------|---------------------|---------------------|
 | A-01 Neprijavljeni posjetitelj | Akter: može pokrenuti prijavu putem OAuth-a; nema pristup ostalim sadržajima. | F-001 |
-| A-02 Prijavljeni korisnik | Akter: koristi radnu okolinu, obrađuje slike, uređuje svoju javnu stranicu i postove. | F-002 – F-012, F-016 |
-| A-03 Prijavljeni korisnik kao posjetitelj | Akter koji pregledava tuđe javne stranice i postove, dodaje i uklanja favorite te preuzima tuđe javne slike na uređaj ili ih dodaje u vlastitu radnu okolinu. | F-013 – F-015 |
+| A-02 Prijavljeni korisnik | Akter: koristi radnu okolinu, obrađuje slike, uređuje svoju javnu stranicu i postove, pregledava tuđe javne stranice i postove, upravlja favoritima, preuzima tuđe javne slike te dodaje djela iz Artic galerije u svoju radnu okolinu. | F-002 – F-017 |
+| S-01 Auth0 | Vanjski sustav (sekundarni akter): pružatelj identiteta koji provodi prijavu i izdaje pristupni token. | F-001 |
+| S-02 Artic API | Vanjski sustav (sekundarni akter): izvor djela iz javne domene za Artic galeriju i za početne slike pri prvoj prijavi. | F-001, F-017 |
 | D-01 Nositelj kolegija i asistent | Dionici (nisu akteri): zadaju opseg i ocjenjuju rad. | Cijeli opseg |
 
 ## 2.4 Ograničenja i pretpostavke
@@ -64,7 +66,7 @@
 | C-04 | Ograničenje | Minimalni opseg obrade: 5 filtara, 4 morfološka operatora, 3 geometrijske transformacije, 1 algoritam segmentacije; najmanje 3 formata datoteka. | Zadatak | Ostvariti sve navedene alate; provjeriti u ispitivanju. |
 | AS-01 | Pretpostavka | Obrada slika izvodi se na backendu (Pillow/OpenCV). | Odluka tima | Odluka zabilježena u 2.5 i docs/4. |
 | AS-02 | Pretpostavka | Za prijavu je dovoljan jedan pružatelj identiteta; tim koristi Auth0 (OAuth 2.0). | Odluka tima | Odluka zabilježena u 2.5 i docs/4. |
-| AS-03 | Pretpostavka | Artic API dostupan je za dohvat početnih slika; ako nije, koriste se ugrađene slike. | Procjena tima | Ostvareno: ugrađene slike nalaze se u `backend/app/seed/`, a prijava ne pada ako Artic ne odgovori (test `test_bez_artica_koriste_se_ugradene_slike`). |
+| AS-03 | Pretpostavka | Artic API dostupan je za dohvat početnih slika i za Artic galeriju (F-017); ako nije, za početne slike koriste se ugrađene slike. | Procjena tima | Ostvareno za početne slike: ugrađene slike nalaze se u `backend/app/seed/`, a prijava ne pada ako Artic ne odgovori (test `test_bez_artica_koriste_se_ugradene_slike`). Ponašanje galerije kad Artic nije dostupan opisano je u UC-011 (A2). |
 | AS-04 | Pretpostavka | Slike se pohranjuju na disku poslužitelja (Railway volume), a ne na vanjskom servisu za pohranu. | Dogovor s asistentom | Vrijedi do prve predaje; baza čuva samo putanju do datoteke, pa je kasniji prelazak na vanjsku pohranu ograničen na `backend/app/storage.py`. |
 
 ## 2.5 Značajne promjene zahtjeva
@@ -78,6 +80,7 @@
 | 31.10.2026. | AS-02, F-001 | Za prijavu se koristi Auth0 (OAuth 2.0), a za pohranu podataka PostgreSQL. | Odluka tima ([sastanak 31.10.](meeting-notes/2026-10-31-tjedan-5.md)) |
 | 9.11.2026. | F-002, NF-05 | Podržani formati utvrđeni su kao JPEG, PNG i WebP, a TIFF uz backend jer ga preglednici ne prikazuju (za prikaz se pretvara u PNG). Najveća veličina datoteke je 10 MB. | Odluka tima ([sastanak 9.11.](meeting-notes/2026-11-09-tjedan-6.md)) |
 | 16.11.2026. | NF-09, AS-04 | Dodan zahtjev za javnu dostupnost aplikacije; slike do prve predaje ostaju na disku poslužitelja. | Generalna proba i dogovor s asistentom ([sastanak 16.11.](meeting-notes/2026-11-16-generalna-proba.md)) |
+| 18.11.2026. | F-017, A-02, S-01, S-02 | Dodan zahtjev za Artic galeriju (UC-011). Obrasci uporabe razrađeni su vezama `<<include>>` (UC-010 Spremanje slike u radnu okolinu) i `<<extend>>`. Akter A-03 spojen je u A-02 jer aplikacija ne razlikuje ulogu posjetitelja od prijavljenog korisnika. Auth0 i Artic API navedeni su kao vanjski sustavi. Razlog: generalna proba pokazala je da obrasci uporabe nisu dovoljno detaljni. | Odluka tima |
 
 ## 2.6 Sljedivost zahtjeva
 
@@ -86,21 +89,21 @@
 | ID zahtjeva | Obrazac uporabe / modul | Arhitekturna realizacija | Ispitivanje ili provjera |
 |-------------|-------------------------|--------------------------|--------------------------|
 | F-001 | UC-001 | `backend/app/auth.py` (provjera Auth0 tokena, stvaranje korisnika), `backend/app/seed.py` (početne slike) | `test_auth.py`, `test_seed.py` |
-| F-002 | UC-002, UC-006 | `backend/app/workspace.py` (učitavanje i preuzimanje slika), `backend/app/storage.py` (pohrana i provjera formata) | `test_workspace.py` |
+| F-002 | UC-002, UC-006, UC-010 | `backend/app/workspace.py` (učitavanje i preuzimanje slika), `backend/app/storage.py` (pohrana i provjera formata) | `test_workspace.py` |
 | F-003 | UC-006 | `backend/app/workspace.py` (organizacija mapa i slika) | `test_workspace.py` |
 | F-004 | UC-006 | Preglednik slike u radnoj okolini | Ručna provjera prikaza odabrane slike |
-| F-005 – F-009 | UC-003 | Modul za obradu slika (u izradi) | na čekanju |
+| F-005 – F-008 | UC-003 | Modul za obradu slika (u izradi) | na čekanju |
+| F-009 | UC-003, UC-010 | Modul za obradu slika (u izradi), `backend/app/storage.py` (pohrana rezultata) | na čekanju |
 | F-010 | UC-007 | `backend/app/users.py` (`PATCH /api/users/me`) | `test_profile_posts.py` |
 | F-011 – F-012 | UC-004 | `backend/app/posts.py` (postovi i kontrola vidljivosti) | `test_profile_posts.py`, `test_slika_privatnog_posta_vidi_samo_vlasnik` |
 | F-013 | UC-005 | Pregled javnih profila i postova (u izradi) | na čekanju |
 | F-014 | UC-008 | API za favorite (u izradi) | na čekanju |
 | F-015 | UC-009 | Preuzimanje tuđe javne slike i dodavanje u vlastitu radnu okolinu (u izradi) | na čekanju |
-| F-016 | UC-002, UC-003, UC-006 | Provjera vlasništva u `backend/app/workspace.py` (`own_folder`, `own_image`) | `test_tudja_radna_okolina_nedostupna` |
+| F-016 | UC-002, UC-003, UC-006, UC-010 | Provjera vlasništva u `backend/app/workspace.py` (`own_folder`, `own_image`) | `test_tudja_radna_okolina_nedostupna` |
+| F-017 | UC-011, UC-010 | Artic galerija (u izradi; stranica `frontend/src/pages/ArticGallery.jsx`) | na čekanju |
 | NF-09 | — | Docker image na Railwayu ([6.3](6-Postavljanje-instalacija-i-konfiguracija.md#63-javno-postavljanje-i-administracija)) | ručna provjera na javnoj domeni |
 
-Stavke označene „na čekanju” dopunit će se nakon realizacije obrade slika (UC-003), pregleda tuđeg javnog profila i objava (UC-005), upravljanja favoritima (UC-008) i preuzimanja tuđe javne slike (UC-009).
-
-Poveznice „na čekanju” dopunit će se kad se ostvare obrada slika (UC-003) i pregled tuđih stranica s favoritima (UC-005).
+Stavke označene „na čekanju” dopunit će se nakon realizacije obrade slika (UC-003), pregleda tuđeg javnog profila i objava (UC-005), upravljanja favoritima (UC-008), preuzimanja tuđe javne slike (UC-009) i Artic galerije (UC-011).
 
 ## 2.7 Pregled zahtjeva
 

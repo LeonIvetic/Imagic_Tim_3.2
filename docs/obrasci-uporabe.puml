@@ -1,37 +1,58 @@
 @startuml
 left to right direction
 skinparam actorStyle awesome
+skinparam packageStyle rectangle
 
 title Dijagram obrazaca uporabe – Imagic
 
+' ===== Sekundarni akteri – vanjski sustavi (desno) =====
+' Deklarirani prvi jer tako Graphviz ne presijeca linije.
+actor "Auth0" as AUTH0 <<sustav>>
+actor "Artic API" as ARTIC <<sustav>>
+
+' ===== Primarni akteri (lijevo) =====
 actor "A-01\nNeprijavljeni posjetitelj" as A01
 actor "A-02\nPrijavljeni korisnik" as A02
-actor "A-03\nPrijavljeni korisnik\nkao posjetitelj" as A03
 
 rectangle "Sustav Imagic" {
     usecase "UC-001 Prijava putem OAuth 2.0" as UC001
-    usecase "UC-002 Ucitavanje slike" as UC002
+
+    usecase "UC-002 Učitavanje slike" as UC002
     usecase "UC-003 Obrada slike" as UC003
-    usecase "UC-004 Objava posta" as UC004
-    usecase "UC-005 Pregled tuđeg javnog\nprofila i objava" as UC005
+    usecase "UC-010 Spremanje slike\nu radnu okolinu" as UC010
     usecase "UC-006 Organizacija slika\nu radnoj okolini" as UC006
+
     usecase "UC-007 Uređivanje vlastitog profila" as UC007
+    usecase "UC-004 Objava posta" as UC004
+
+    usecase "UC-005 Pregled tuđeg javnog\nprofila i objava" as UC005
     usecase "UC-008 Upravljanje favoritima" as UC008
     usecase "UC-009 Preuzimanje tuđe javne slike" as UC009
+
+    usecase "UC-011 Dodavanje djela\niz Artic galerije" as UC011
 }
 
-' A-01 Neprijavljeni posjetitelj
-A01 --> UC001
+' ===== Asocijacije aktera (UML: bez strelica) =====
+A01 -- UC001
+UC001 -- AUTH0
 
-' A-02 Prijavljeni korisnik
-A02 --> UC002
-A02 --> UC003
-A02 --> UC004
-A02 --> UC006
-A02 --> UC007
+A02 -- UC002
+A02 -- UC003
+A02 -- UC006
+A02 -- UC007
+A02 -- UC004
+A02 -- UC005
+A02 -- UC008
+A02 -- UC009
+A02 -- UC011
+UC011 -- ARTIC
 
-' A-03 Prijavljeni korisnik kao posjetitelj
-A03 --> UC005
-A03 --> UC008
-A03 --> UC009
+' ===== <<include>> =====
+UC002 ..> UC010 : <<include>>
+UC003 ..> UC010 : <<include>>
+UC011 ..> UC010 : <<include>>
+
+' ===== <<extend>> =====
+UC008 ..> UC005 : <<extend>>
+UC009 ..> UC005 : <<extend>>
 @enduml
