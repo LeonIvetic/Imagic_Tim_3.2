@@ -23,7 +23,7 @@ React SPA  <--REST/JSON (/api/...)-->  FastAPI  <-->  PostgreSQL
     |                                     |
     +--> Auth0 (prijava, token)           +--> pohrana slika na disku (UPLOAD_DIR)
                                           +--> Auth0 (provjera tokena, /userinfo)
-                                          +--> Artic API (3 početne slike)
+                                          +--> Artic API (3 početne slike; Artic galerija u izradi)
 ```
 
 React SPA se prijavljuje preko Auth0 i uz svaki zahtjev backendu šalje pristupni token (`Authorization: Bearer`). Backend provjerava token Auth0 javnim ključevima, a pri prvoj prijavi dohvaća profil korisnika, stvara ga u bazi, stvara mu korijensku mapu i učitava 3 početne slike.

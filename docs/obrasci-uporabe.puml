@@ -1,30 +1,58 @@
 @startuml
 left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
 
-actor "A-01\nNeprijavljeni posjetitelj" as A1
-actor "A-02\nPrijavljeni korisnik" as A2
-actor "A-03\nPrijavljeni korisnik\nkao posjetitelj" as A3
+title Dijagram obrazaca uporabe – Imagic
 
-actor "Auth0" as Auth0 <<sustav>>
-actor "Artic API" as Artic <<sustav>>
+' ===== Sekundarni akteri – vanjski sustavi (desno) =====
+' Deklarirani prvi jer tako Graphviz ne presijeca linije.
+actor "Auth0" as AUTH0 <<sustav>>
+actor "Artic API" as ARTIC <<sustav>>
 
-rectangle "Imagic" {
-    usecase "UC-001\nPrijava" as UC1
-    usecase "UC-002\nUpload i organizacija slika" as UC2
-    usecase "UC-003\nObrada slike" as UC3
-    usecase "UC-004\nObjava posta" as UC4
-    usecase "UC-005\nPregled i favoriti" as UC5
+' ===== Primarni akteri (lijevo) =====
+actor "A-01\nNeprijavljeni posjetitelj" as A01
+actor "A-02\nPrijavljeni korisnik" as A02
+
+rectangle "Sustav Imagic" {
+    usecase "UC-001 Prijava putem OAuth 2.0" as UC001
+
+    usecase "UC-002 Učitavanje slike" as UC002
+    usecase "UC-003 Obrada slike" as UC003
+    usecase "UC-010 Spremanje slike\nu radnu okolinu" as UC010
+    usecase "UC-006 Organizacija slika\nu radnoj okolini" as UC006
+
+    usecase "UC-007 Uređivanje vlastitog profila" as UC007
+    usecase "UC-004 Objava posta" as UC004
+
+    usecase "UC-005 Pregled tuđeg javnog\nprofila i objava" as UC005
+    usecase "UC-008 Upravljanje favoritima" as UC008
+    usecase "UC-009 Preuzimanje tuđe javne slike" as UC009
+
+    usecase "UC-011 Dodavanje djela\niz Artic galerije" as UC011
 }
 
-A1 -- UC1
+' ===== Asocijacije aktera (UML: bez strelica) =====
+A01 -- UC001
+UC001 -- AUTH0
 
-A2 -- UC2
-A2 -- UC3
-A2 -- UC4
+A02 -- UC002
+A02 -- UC003
+A02 -- UC006
+A02 -- UC007
+A02 -- UC004
+A02 -- UC005
+A02 -- UC008
+A02 -- UC009
+A02 -- UC011
+UC011 -- ARTIC
 
-A3 -- UC5
+' ===== <<include>> =====
+UC002 ..> UC010 : <<include>>
+UC003 ..> UC010 : <<include>>
+UC011 ..> UC010 : <<include>>
 
-UC1 -- Auth0
-UC1 -- Artic
-
+' ===== <<extend>> =====
+UC008 ..> UC005 : <<extend>>
+UC009 ..> UC005 : <<extend>>
 @enduml

@@ -10,249 +10,346 @@
 
 **PlantUML izvor:** [obrasci-uporabe.puml](obrasci-uporabe.puml)
 
+Primarni akteri (A-01, A-02) nalaze se lijevo, a vanjski sustavi s kojima Imagic komunicira (Auth0, Artic API) desno. Veza `<<include>>` označava ponašanje koje se uvijek izvodi kao dio osnovnog obrasca. UC-010 Spremanje slike u radnu okolinu zajednički je korak obrazaca UC-002, UC-003 i UC-011. Veza `<<extend>>` označava neobavezno ponašanje koje korisnik može pokrenuti iz osnovnog obrasca. Tako se iz pregleda tuđeg javnog profila (UC-005) profil ili post može dodati u favorite (UC-008), a slika iz javnog posta preuzeti (UC-009).
+
 ## 3.2 Specifikacije obrazaca uporabe
 
-**Cilj:** Za svaki obrazac uporabe iz dijagrama objasniti cilj aktera, uobičajenu interakciju s aplikacijom i važne alternative.
+**Cilj:** Povezati obrasce uporabe iz dijagrama s akterima i funkcijskim zahtjevima.
 
-Akteri su opisani u [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-akteri).
+Akteri su opisani u [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-akteri), a veze sa zahtjevima navedene su u [2.6 Sljedivost zahtjeva](2-Analiza-zahtjeva.md#26-sljedivost-zahtjeva).
 
 | ID | Naziv | Akter | Povezani zahtjevi |
 |----|-------|-------|-------------------|
-| UC-001 | Prijava putem OAuth 2.0 | Neprijavljeni posjetitelj | F-001 |
-| UC-002 | Upload i organizacija slika | Prijavljeni korisnik | F-002 – F-004, F-016 |
-| UC-003 | Obrada slike | Prijavljeni korisnik | F-005 – F-009 |
-| UC-004 | Objava posta | Prijavljeni korisnik | F-010 – F-012 |
-| UC-005 | Pregled tuđe stranice i favoriti | Prijavljeni korisnik | F-013 – F-016 |
+| UC-001 | Prijava putem OAuth 2.0 | A-01 Neprijavljeni posjetitelj | F-001 |
+| UC-002 | Učitavanje slike | A-02 Prijavljeni korisnik | F-002, F-016 |
+| UC-003 | Obrada slike | A-02 Prijavljeni korisnik | F-005 – F-009, F-016 |
+| UC-004 | Objava posta | A-02 Prijavljeni korisnik | F-011 – F-012 |
+| UC-005 | Pregled tuđeg javnog profila i objava | A-02 Prijavljeni korisnik | F-013 |
+| UC-006 | Organizacija slika u radnoj okolini | A-02 Prijavljeni korisnik | F-002 – F-004, F-016 |
+| UC-007 | Uređivanje vlastitog profila | A-02 Prijavljeni korisnik | F-010 |
+| UC-008 | Upravljanje favoritima | A-02 Prijavljeni korisnik | F-014 |
+| UC-009 | Preuzimanje tuđe javne slike | A-02 Prijavljeni korisnik | F-015 |
+| UC-010 | Spremanje slike u radnu okolinu | — (uključuju ga UC-002, UC-003, UC-011) | F-002, F-009, F-016 |
+| UC-011 | Dodavanje djela iz Artic galerije | A-02 Prijavljeni korisnik; S-02 Artic API | F-017 |
+
+## 3.3 Opisi obrazaca uporabe
 
 ### UC-001 Prijava putem OAuth 2.0
 
-**Preduvjeti:**
-- korisnik je otvorio aplikaciju Imagic
-- korisnik nije prijavljen
+**Akter:** A-01 Neprijavljeni posjetitelj; vanjski sustav S-01 Auth0
 
-**Glavni tijek:**
+**Preduvjeti**
+
+- Korisnik je otvorio aplikaciju Imagic i nije prijavljen.
+
+**Glavni tijek**
+
 1. Korisnik odabire opciju „Prijava”.
 2. Sustav preusmjerava korisnika na Auth0 stranicu za prijavu.
-3. Korisnik unosi svoje podatke za prijavu ili odabire prijavu putem Google računa.
-4. Auth0 provjerava identitet korisnika.
-5. Nakon uspješne autentifikacije korisnik se preusmjerava natrag u aplikaciju Imagic.
-6. Aplikacija dohvaća pristupni token i šalje ga backendu radi provjere.
-7. Backend provjerava valjanost tokena i traži korisnika u bazi podataka.
-8. Ako korisnik ne postoji u bazi, sustav stvara njegov korisnički zapis i dodjeljuje mu tri početne slike.
-9. Sustav prikazuje prijavljenom korisniku njegovu radnu okolinu.
+3. Korisnik unosi podatke za prijavu ili odabire prijavu putem Google računa.
+4. Auth0 provjerava identitet korisnika i preusmjerava ga natrag u aplikaciju Imagic.
+5. Aplikacija dohvaća pristupni token i šalje ga poslužitelju radi provjere.
+6. Poslužitelj provjerava valjanost tokena i traži korisnika u bazi podataka.
+7. Ako se korisnik prijavljuje prvi put, sustav stvara korisnički zapis i dodjeljuje mu tri početne slike.
+8. Sustav prikazuje korisnikovu radnu okolinu.
 
-**Alternativni tijekovi:**
+**Alternativni tijekovi**
 
-A1 - Korisnik odustaje od prijave
-1. Korisnik odustaje od prijave na Auth0 stranici.
-2. Korisnik ostaje neprijavljen i nema pristup zaštićenim funkcionalnostima.
+- **A1 – Korisnik odustaje od prijave.** Korisnik prekida postupak na Auth0 stranici i ostaje neprijavljen.
+- **A2 – Auth0 nije dostupan.** Sustav ne može dovršiti prijavu i korisnik ostaje neprijavljen.
+- **A3 – Korisnički račun već postoji.** Sustav koristi postojeći korisnički zapis i otvara korisnikovu radnu okolinu.
 
-A2 - Auth0 nije dostupan
-1. Sustav ne može uspostaviti vezu s Auth0 uslugom.
-2. Prijava se ne može dovršiti pa korisnik ostaje neprijavljen.
+**Postuvjeti**
 
-A3 - Korisnički račun već postoji
-1. Sustav pronalazi postojeći korisnički račun u bazi podataka.
-2. Korisnik se uspješno prijavljuje i pristupa svojoj radnoj okolini.
+- Nakon uspješne prijave korisnik može pristupiti svojoj privatnoj radnoj okolini i stranici profila.
+- Nakon prve uspješne prijave korisniku su dostupne tri početne slike.
+- Ako prijava ne uspije ili korisnik odustane, zaštićene funkcionalnosti ostaju nedostupne.
 
-**Postuvjeti:**
-- nakon uspješne prijave korisnik ima pristup svojoj privatnoj radnoj okolini i javnoj stranici profila
-- ako je riječ o prvoj prijavi, stvoren je korisnički račun te su korisniku dodijeljene tri početne slike
-- ako prijava nije uspjela ili je korisnik odustao, ostaje neprijavljen i nema pristup zaštićenim funkcionalnostima
+### UC-002 Učitavanje slike
 
-### UC-002 Upload i organizacija slika
+**Akter:** A-02 Prijavljeni korisnik
 
-**Preduvjeti:**
+**Preduvjeti**
 
-- korisnik je prijavljen u aplikaciju Imagic
-- korisnik je otvorio svoju privatnu radnu okolinu
+- Korisnik je prijavljen i otvorio je svoju privatnu radnu okolinu.
 
-**Glavni tijek:**
+**Glavni tijek**
 
 1. Korisnik odabire opciju za učitavanje slike.
 2. Korisnik odabire datoteku sa svojeg uređaja i potvrđuje učitavanje.
-3. Sustav provjerava tip i veličinu odabrane datoteke.
-4. Sustav pohranjuje sliku u korisnikovu privatnu radnu okolinu i prikazuje je u popisu datoteka.
-5. Korisnik prema potrebi organizira sadržaj radne okoline stvaranjem ili brisanjem mapa, preimenovanjem datoteka ili mapa te premještanjem slika u mape.
-6. Sustav sprema odabrane promjene i ažurira prikaz radne okoline.
+3. Sustav provjerava format i veličinu datoteke.
+4. Sustav pohranjuje sliku u korisnikovu privatnu radnu okolinu (uključuje UC-010).
+5. Sustav prikazuje učitanu sliku u popisu datoteka.
 
-**Alternativni tijekovi:**
+**Alternativni tijekovi**
 
-A1 – Korisnik odustaje od učitavanja
+- **A1 – Korisnik odustaje od učitavanja.** Korisnik zatvara dijalog prije potvrde učitavanja.
+- **A2 – Format nije podržan ili datoteka prelazi dopuštenu veličinu.** Sustav odbija učitavanje i prikazuje razlog odbijanja.
 
-1. Korisnik odustaje prije potvrde učitavanja.
-2. Nova datoteka nije dodana u radnu okolinu.
+**Postuvjeti**
 
-A2 – Nepodržani format ili prevelika datoteka
-
-1. Sustav utvrđuje da format datoteke nije podržan ili da datoteka prelazi dopuštenu veličinu.
-2. Sustav odbija učitavanje i prikazuje poruku o razlogu odbijanja.
-
-A3 – Rad s postojećim slikama i mapama
-
-1. Korisnik umjesto učitavanja nove slike odabire rad s postojećim sadržajem svoje radne okoline.
-2. Korisnik odabire jednu od radnji:
-   - stvara novu mapu unosom naziva i odabirom njezina položaja, uključujući unutar postojeće mape
-   - preimenuje odabranu datoteku ili mapu unosom novog naziva
-   - premješta odabranu sliku u odredišnu mapu
-   - briše odabranu mapu
-   - odabire sliku za prikaz, nakon čega je sustav prikazuje u pregledniku slike
-   - odabire sliku za preuzimanje, nakon čega sustav omogućuje njezino preuzimanje na korisnikov uređaj u podržanom formatu.
-3. Ako odabrana radnja mijenja sadržaj radne okoline, sustav sprema promjene i ažurira prikaz.
-4. Korisnik prema potrebi ponavlja postupak.
-
-**Postuvjeti:**
-
-- nakon uspješnog učitavanja slika je pohranjena u korisnikovoj privatnoj radnoj okolini
-- provedene promjene u strukturi mapa, nazivima i položaju slika spremljene su i vidljive nakon ponovnog učitavanja
-- nakon uspješnog prikaza odabrana slika prikazana je u pregledniku slike
-- nakon uspješnog preuzimanja korisnik ima lokalnu kopiju slike
-- ako korisnik odustane od učitavanja ili sustav odbije datoteku, nova datoteka nije pohranjena
-- sadržaj radne okoline dostupan je samo njezinu vlasniku
-
+- Nakon uspješnog učitavanja slika je dostupna vlasniku u njegovoj privatnoj radnoj okolini.
+- U slučaju odustajanja ili odbijanja datoteka se ne pohranjuje.
 
 ### UC-003 Obrada slike
 
-**Preduvjeti:**
+**Akter:** A-02 Prijavljeni korisnik
 
-- korisnik je prijavljen u aplikaciju Imagic
-- korisnik je odabrao sliku u svojoj privatnoj radnoj okolini
+**Preduvjeti**
 
-**Glavni tijek:**
+- Korisnik je prijavljen i odabrao je sliku u svojoj privatnoj radnoj okolini.
 
-1. Korisnik odabire postupak obrade slike: filtar, morfološki operator, geometrijsku transformaciju ili segmentaciju.
+**Glavni tijek**
+
+1. Korisnik odabire postupak obrade slike, primjerice filtar, morfološki operator, geometrijsku transformaciju ili segmentaciju.
 2. Korisnik prema potrebi zadaje parametre odabranog postupka.
-3. Sustav primjenjuje odabrani postupak i prikazuje rezultat obrade.
-4. Korisnik prema potrebi nastavlja obrađivati sliku ponavljanjem koraka 1. – 3.
+3. Sustav primjenjuje postupak i prikazuje rezultat obrade.
+4. Korisnik prema potrebi nastavlja obradu ponavljanjem koraka od 1 do 3.
 5. Korisnik odabire spremanje rezultata kao nove datoteke i unosi njezin naziv.
-6. Sustav pohranjuje rezultat kao novu datoteku u korisnikovoj radnoj okolini, uz očuvanje izvorne slike.
+6. Sustav pohranjuje rezultat kao novu datoteku u korisnikovoj radnoj okolini (uključuje UC-010).
 
-**Alternativni tijekovi:**
+**Alternativni tijekovi**
 
-A1 – Prepisivanje izvorne slike
+- **A1 – Prepisivanje izvorne slike.** U 5. koraku korisnik odabire prepisivanje izvorne slike. Sustav sprema rezultat obrade umjesto izvorne slike.
+- **A2 – Odustajanje od spremanja.** Korisnik završava obradu bez spremanja rezultata.
 
-1. U 5. koraku korisnik umjesto spremanja u novu datoteku odabire prepisivanje izvorne slike.
-2. Sustav sprema rezultat obrade umjesto izvorne slike.
+**Postuvjeti**
 
-A2 – Odustajanje od spremanja
-
-1. Korisnik završava obradu bez spremanja rezultata.
-2. Izvorna datoteka ostaje nepromijenjena, a rezultat obrade nije pohranjen.
-
-**Postuvjeti:**
-
-- nakon spremanja u novu datoteku u radnoj okolini postoje izvorna slika i rezultat obrade
-- nakon prepisivanja izvorna datoteka zamijenjena je rezultatom obrade
-- ako korisnik ne spremi rezultat, pohranjena izvorna datoteka ostaje nepromijenjena
-- rezultat obrade u privatnoj radnoj okolini dostupan je samo vlasniku
+- Nakon spremanja u novu datoteku u radnoj okolini postoje izvorna slika i rezultat obrade.
+- Nakon prepisivanja izvorna datoteka zamijenjena je rezultatom obrade.
+- Ako korisnik odustane od spremanja, pohranjena izvorna datoteka ostaje nepromijenjena.
 
 ### UC-004 Objava posta
 
-**Preduvjeti:**
+**Akter:** A-02 Prijavljeni korisnik
 
-- korisnik je prijavljen u aplikaciju Imagic
-- korisnik je otvorio svoju javnu stranicu
-- za objavu novog posta korisnik ima sliku u svojoj radnoj okolini
+**Preduvjeti**
 
-**Glavni tijek:**
+- Korisnik je prijavljen i otvorio je stranicu vlastitog profila.
+- Za novi post korisnik ima barem jednu sliku u svojoj radnoj okolini.
+
+**Glavni tijek**
 
 1. Korisnik odabire opciju za dodavanje novog posta.
-2. Korisnik odabire sliku iz svoje radne okoline i unosi tekstualni opis.
-3. Korisnik određuje hoće li post biti javan ili privatan.
+2. Korisnik odabire sliku iz svoje radne okoline i unosi opis.
+3. Korisnik određuje vidljivost posta. Početna postavka je „Privatno”.
 4. Korisnik potvrđuje objavu.
-5. Sustav sprema post i prikazuje ga na korisnikovoj stranici.
-6. Javni post dostupan je svim prijavljenim korisnicima, a privatni samo vlasniku.
+5. Sustav sprema post i prikazuje ga na stranici korisnikova profila.
 
-**Alternativni tijekovi:**
+**Alternativni tijekovi**
 
-A1 – Korisnik odustaje od objave
+- **A1 – Korisnik odustaje od objave.** Korisnik zatvara obrazac prije potvrde i sustav ne stvara post.
+- **A2 – Uređivanje postojećeg posta.** Korisnik odabire vlastiti post, mijenja njegov sadržaj ili vidljivost i potvrđuje promjene. Sustav sprema promjene i prikazuje ažurirani post.
+- **A3 – Brisanje postojećeg posta.** Korisnik odabire brisanje vlastitog posta. Sustav briše post i uklanja ga sa stranice profila.
 
-1. Korisnik odustaje prije potvrde objave.
-2. Sustav ne stvara novi post.
+**Postuvjeti**
 
-A2 – Uređivanje postojećeg posta
+- Javni post dostupan je prijavljenim korisnicima, a privatni post samo vlasniku.
+- Nakon uređivanja prikazuje se spremljeni sadržaj uz odabranu vidljivost.
+- Nakon brisanja post više nije dostupan.
 
-1. Korisnik umjesto dodavanja novog posta odabire vlastiti postojeći post i opciju za uređivanje.
-2. Korisnik uređuje sadržaj posta ili mijenja njegovu oznaku javnosti.
-3. Korisnik potvrđuje promjene.
-4. Sustav sprema promjene i prikazuje ažurirani post uz odgovarajuću vidljivost.
+### UC-005 Pregled tuđeg javnog profila i objava
 
-A3 – Brisanje postojećeg posta
+**Akter:** A-02 Prijavljeni korisnik
 
-1. Korisnik umjesto dodavanja novog posta odabire vlastiti postojeći post i opciju za brisanje.
-2. Sustav briše post i uklanja ga s korisnikove stranice.
+**Preduvjeti**
 
-A4 – Uređivanje vlastitog profila bez objave novog posta
+- Korisnik je prijavljen u aplikaciju Imagic.
 
-1. Korisnik umjesto dodavanja novog posta odabire opciju za uređivanje vlastitog profila.
-2. Korisnik mijenja korisničko ime, sliku ili kratki opis.
-3. Korisnik potvrđuje promjene.
-4. Sustav sprema promjene i prikazuje ažurirane podatke na korisnikovoj javnoj stranici.
-
-**Postuvjeti:**
-
-- nakon uspješne objave novi post prikazan je na korisnikovoj stranici
-- nakon uspješnog uređivanja post prikazuje spremljeni sadržaj i ima odabranu vidljivost
-- nakon brisanja post više nije vidljiv na korisnikovoj stranici
-- javni postovi vidljivi su svim prijavljenim korisnicima, a privatni samo vlasniku
-- ako korisnik odustane od objave, novi post nije stvoren
-- nakon uspješnog uređivanja profila ažurirani podaci prikazani su na korisnikovoj javnoj stranici
-- podatke profila može uređivati samo njegov vlasnik
-
-### UC-005 Pregled tuđe stranice i favoriti
-
-**Preduvjeti:**
-
-- korisnik je prijavljen u aplikaciju Imagic
-- postoji javna stranica drugog korisnika
-
-**Glavni tijek:**
+**Glavni tijek**
 
 1. Korisnik otvara javnu stranicu drugog korisnika.
-2. Sustav prikazuje korisničko ime, sliku i kratki opis vlasnika stranice te njegove javne postove.
-3. Korisnik pregledava prikazani sadržaj.
-4. Korisnik odabire pojedini javni post ili cijelu javnu stranicu i dodaje ih u favorite.
-5. Sustav sprema odabir i prikazuje post ili stranicu na korisnikovu popisu favorita.
+2. Sustav dohvaća javne podatke profila i javne postove vlasnika stranice.
+3. Sustav prikazuje korisničko ime, profilnu sliku, kratki opis i popis javnih postova.
+4. Korisnik pregledava prikazani sadržaj.
 
-**Alternativni tijekovi:**
+**Alternativni tijekovi**
 
-A1 – Pregled bez dodavanja u favorite
+- **A1 – Profil nema javnih postova.** Sustav prikazuje javne podatke profila i prazan popis postova.
+- **A2 – Profil nije dostupan.** Sustav obavještava korisnika da traženi profil nije dostupan.
 
-1. Korisnik pregledava javnu stranicu i postove bez dodavanja u favorite.
-2. Popis favorita ostaje nepromijenjen.
+**Postuvjeti**
 
-A2 – Uklanjanje iz favorita
+- Prikazani su dostupni javni podaci profila i javni postovi.
+- Privatni postovi vidljivi su samo vlasniku profila.
 
-1. Korisnik odabire post ili javnu stranicu koji se već nalaze u njegovim favoritima.
-2. Korisnik odabire uklanjanje iz favorita.
-3. Sustav uklanja odabrani post ili stranicu s korisnikova popisa favorita.
+### UC-006 Organizacija slika u radnoj okolini
 
-A3 – Preuzimanje slike na uređaj
+**Akter:** A-02 Prijavljeni korisnik
 
-1. Tijekom pregleda korisnik odabire sliku iz javnog posta i opciju za preuzimanje na svoj uređaj.
-2. Sustav omogućuje preuzimanje odabrane slike.
+**Preduvjeti**
 
-A4 – Dodavanje slike u vlastitu radnu okolinu
+- Korisnik je prijavljen i otvorio je svoju privatnu radnu okolinu.
+- Za radnju nad postojećom slikom ili mapom korisnik ima odgovarajuću stavku u radnoj okolini.
 
-1. Tijekom pregleda korisnik odabire sliku iz javnog posta i opciju za dodavanje u vlastitu radnu okolinu.
-2. Sustav pohranjuje kopiju slike u korisnikovu privatnu radnu okolinu.
-3. Dodana slika pojavljuje se u korisnikovoj radnoj okolini.
+**Glavni tijek**
 
-**Postuvjeti:**
+1. Korisnik odabire mjesto u radnoj okolini na kojem želi stvoriti mapu.
+2. Korisnik odabire opciju za stvaranje mape, upisuje naziv i potvrđuje unos.
+3. Sustav stvara mapu na odabranom mjestu i ažurira prikaz radne okoline.
+4. Korisnik odabire sliku koju želi organizirati i pokreće premještanje.
+5. Korisnik odabire odredišnu mapu i potvrđuje premještanje.
+6. Sustav sprema novi položaj slike i prikazuje je u odredišnoj mapi.
 
-- korisniku su prikazani javni podaci profila i javni postovi drugog korisnika, dok privatni postovi nisu dostupni
-- nakon dodavanja u favorite odabrani post ili stranica nalaze se na korisnikovu popisu favorita
-- nakon uklanjanja iz favorita odabrani post ili stranica više se ne nalaze na tom popisu
-- nakon uspješnog preuzimanja korisnik ima lokalnu kopiju slike
-- nakon uspješnog dodavanja u radnu okolinu korisnik ima vlastitu kopiju slike u svojoj privatnoj radnoj okolini
-- sadržaj izvornog posta i stranice drugog korisnika ostaje nepromijenjen
+**Alternativni tijekovi**
 
-## 3.3 Provjera dosljednosti obrazaca uporabe
+- **A1 – Stvaranje podmape.** U 1. koraku korisnik otvara postojeću mapu. Sustav stvara novu mapu unutar nje.
+- **A2 – Preimenovanje datoteke ili mape.** Korisnik odabire stavku, unosi novi naziv i potvrđuje promjenu. Sustav sprema naziv i ažurira prikaz.
+- **A3 – Brisanje mape.** Korisnik odabire mapu i potvrđuje brisanje. Sustav provodi brisanje i ažurira prikaz.
+- **A4 – Pregled slike.** Korisnik otvara odabranu sliku, a sustav je prikazuje u pregledniku slike.
+- **A5 – Preuzimanje vlastite slike.** Korisnik odabire sliku i opciju za preuzimanje. Sustav omogućuje preuzimanje slike na korisnikov uređaj u podržanom formatu.
+- **A6 – Odustajanje od radnje.** Korisnik zatvara dijalog prije potvrde. Sustav ne sprema promjenu za tu radnju.
+
+**Postuvjeti**
+
+- Spremljena struktura mapa, nazivi i položaji slika vidljivi su pri sljedećem otvaranju radne okoline.
+- Nakon uspješnog preuzimanja korisnik ima lokalnu kopiju slike.
+
+### UC-007 Uređivanje vlastitog profila
+
+**Akter:** A-02 Prijavljeni korisnik
+
+**Preduvjeti**
+
+- Korisnik je prijavljen i otvorio je stranicu vlastitog profila.
+
+**Glavni tijek**
+
+1. Korisnik odabire opciju „Uredi profil”.
+2. Sustav prikazuje obrazac s trenutačnim podacima profila.
+3. Korisnik mijenja jedan ili više podataka, primjerice korisničko ime, ime za prikaz, profilnu sliku ili kratki opis.
+4. Korisnik potvrđuje spremanje.
+5. Sustav provjerava podatke i sprema izmjene.
+6. Sustav prikazuje ažurirane podatke na stranici profila.
+
+**Alternativni tijekovi**
+
+- **A1 – Korisničko ime je zauzeto.** Sustav prikazuje poruku uz polje korisničkog imena. Korisnik može unijeti drugo ime i ponovno potvrditi spremanje.
+- **A2 – Korisnik odustaje od uređivanja.** Korisnik zatvara obrazac prije spremanja i sustav prikazuje prethodno spremljene podatke.
+
+**Postuvjeti**
+
+- Uspješno spremljeni podaci prikazuju se na javnoj stranici profila.
+- Podatke profila može uređivati samo njegov vlasnik.
+
+### UC-008 Upravljanje favoritima
+
+**Akter:** A-02 Prijavljeni korisnik
+
+**Odnos:** proširuje (`<<extend>>`) UC-005. Korisnik dodavanje u favorite može pokrenuti tijekom pregleda tuđeg javnog profila ili posta (UC-005, korak 4). Popisu favorita može pristupiti i izravno.
+
+**Preduvjeti**
+
+- Korisnik je prijavljen.
+- Za dodavanje je dostupan javni profil drugog korisnika ili njegov javni post.
+- Za uklanjanje korisnik ima stavku na popisu favorita.
+
+**Glavni tijek**
+
+1. Korisnik otvara javni profil drugog korisnika ili njegov javni post.
+2. Korisnik odabire opciju za dodavanje profila ili posta u favorite.
+3. Sustav sprema odabranu stavku na korisnikov popis favorita.
+4. Korisnik otvara popis favorita i na njemu vidi spremljenu stavku.
+
+**Alternativni tijekovi**
+
+- **A1 – Uklanjanje iz favorita.** Korisnik odabire spremljeni profil ili post i pokreće uklanjanje iz favorita. Sustav uklanja stavku i ažurira popis.
+- **A2 – Sadržaj više nije javan ili je uklonjen.** Ako odabrani sadržaj više nije dostupan kada korisnik zatraži dodavanje, sustav odbija zahtjev i prikazuje obavijest.
+
+**Postuvjeti**
+
+- Nakon uspješnog dodavanja stavka se nalazi na korisnikovu popisu favorita.
+- Nakon uspješnog uklanjanja stavka više nije na popisu favorita.
+
+### UC-009 Preuzimanje tuđe javne slike
+
+**Akter:** A-02 Prijavljeni korisnik
+
+**Odnos:** proširuje (`<<extend>>`) UC-005. Korisnik preuzimanje pokreće tijekom pregleda tuđeg javnog posta koji sadrži sliku (UC-005, korak 4). Alternativni tijek A1 sprema kopiju u radnu okolinu, ali nije dio glavnog tijeka, pa obrazac ne uključuje UC-010.
+
+**Preduvjeti**
+
+- Korisnik je prijavljen.
+- Korisnik je otvorio javni post drugog korisnika koji sadrži sliku.
+
+**Glavni tijek**
+
+1. Korisnik odabire opciju za preuzimanje slike iz javnog posta.
+2. Sustav provjerava je li post još uvijek javan i je li slika dostupna.
+3. Sustav šalje datoteku pregledniku radi preuzimanja.
+4. Korisnik sprema datoteku na svoj uređaj.
+
+**Alternativni tijekovi**
+
+- **A1 – Dodavanje u vlastitu radnu okolinu.** U 1. koraku korisnik odabire dodavanje slike u svoju radnu okolinu. Nakon provjere dostupnosti sustav pohranjuje kopiju slike i prikazuje je u korisnikovu popisu datoteka.
+- **A2 – Slika više nije dostupna.** Ako je post u međuvremenu obrisan, postao privatan ili slika nije dostupna, sustav odbija zahtjev i obavještava korisnika.
+
+**Postuvjeti**
+
+- Nakon uspješnog preuzimanja korisnik ima lokalnu kopiju slike.
+- Nakon uspješnog dodavanja u radnu okolinu korisnik ima kopiju slike u svojoj privatnoj radnoj okolini.
+
+### UC-010 Spremanje slike u radnu okolinu
+
+**Akter:** nema izravnog aktera. Obrazac je uključen (`<<include>>`) u UC-002 Učitavanje slike, UC-003 Obrada slike i UC-011 Dodavanje djela iz Artic galerije.
+
+**Preduvjeti**
+
+- Korisnik je prijavljen.
+- Osnovni obrazac predao je sadržaj slike, njezin naziv i odredišnu mapu u korisnikovoj radnoj okolini.
+
+**Glavni tijek**
+
+1. Sustav provjerava pripada li odredišna mapa prijavljenom korisniku.
+2. Sustav provjerava format slike prema stvarnom sadržaju datoteke i njezinu veličinu.
+3. Sustav sprema datoteku na disk poslužitelja i u bazi bilježi njezin naziv, format, veličinu i mapu.
+4. Sustav vraća podatke o spremljenoj slici osnovnom obrascu.
+
+**Alternativni tijekovi**
+
+- **A1 – Format nije podržan ili datoteka prelazi dopuštenu veličinu.** Sustav ne sprema datoteku i osnovnom obrascu vraća razlog odbijanja.
+- **A2 – Odredišna mapa ne pripada korisniku ili ne postoji.** Sustav odbija spremanje.
+
+**Postuvjeti**
+
+- Nakon uspješnog spremanja slika je vidljiva samo vlasniku u njegovoj radnoj okolini.
+- Ako spremanje ne uspije, u radnoj okolini ne nastaje nova datoteka.
+
+### UC-011 Dodavanje djela iz Artic galerije
+
+**Akter:** A-02 Prijavljeni korisnik; vanjski sustav S-02 Artic API
+
+**Preduvjeti**
+
+- Korisnik je prijavljen i otvorio je stranicu Artic galerije.
+
+**Glavni tijek**
+
+1. Korisnik upisuje pojam za pretragu.
+2. Sustav šalje upit Artic API-ju i prikazuje popis pronađenih djela iz javne domene s pregledom slike i nazivom djela.
+3. Korisnik odabire djelo i opciju za dodavanje u radnu okolinu.
+4. Sustav dohvaća sliku djela s Artic API-ja.
+5. Sustav sprema sliku u korisnikovu radnu okolinu (uključuje UC-010).
+6. Sustav obavještava korisnika da je djelo dodano.
+
+**Alternativni tijekovi**
+
+- **A1 – Nema rezultata.** Sustav prikazuje poruku da za zadani pojam nije pronađeno nijedno djelo.
+- **A2 – Artic API nije dostupan.** Sustav prikazuje poruku da galerija trenutačno nije dostupna; radna okolina ostaje nepromijenjena.
+- **A3 – Korisnik odustaje.** Korisnik napušta galeriju bez dodavanja djela.
+
+**Postuvjeti**
+
+- Nakon uspješnog dodavanja slika djela nalazi se u korisnikovoj privatnoj radnoj okolini.
+- Ako dodavanje ne uspije ili korisnik odustane, radna okolina ostaje nepromijenjena.
+
+## 3.4 Provjera dosljednosti obrazaca uporabe
 
 **Cilj:** Provjeriti međusobnu usklađenost obrazaca uporabe, aktera, zahtjeva i ispitnih slučajeva. Cjelovito mapiranje održava se u [matrici sljedivosti zahtjeva](2-Analiza-zahtjeva.md#26-sljedivost-zahtjeva).
 
 | Provjera | Pitanje za tim |
-| --- | --- |
+|----------|----------------|
 | Zahtjev | Je li svaki važan obrazac uporabe povezan s postojećim zahtjevom? |
-| Akter | Odgovara li akter naveden ovdje prethodno utvrđenoj ulozi i dopuštenoj interakciji? |
-| Aplikacija | Može li tim demonstrirati opisani glavni rezultat i važnu alternativu ili je opis jasno označen kao trenutačno oblikovanje? |
+| Akter | Odgovara li akter naveden u obrascu utvrđenoj ulozi i dopuštenim interakcijama? |
+| Dijagram | Podudaraju li se nazivi obrazaca i njihovi akteri u tablici, opisima i dijagramu? |
+| Aplikacija | Može li tim demonstrirati opisani glavni tijek i važne alternative? |

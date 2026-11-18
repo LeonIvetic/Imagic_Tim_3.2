@@ -23,11 +23,11 @@ Osnovnu obradu rasterskih slika (filtri, geometrijske transformacije, morfološk
 
 **Cilj:** Jasno definirati granice sustava — što je obuhvaćeno odobrenim zadatkom, što je svjesno izostavljeno ili odgođeno te o kojim vanjskim uslugama sustav izravno ovisi.
 
-**Uključeno:** Prijava putem OAuth 2.0; privatna radna okolina (upload/download u najmanje 3 formata, mape, imenovanje i preimenovanje, prikaz slike); obrada slika (najmanje 5 filtara, 4 morfološka operatora, 3 geometrijske transformacije i 1 algoritam segmentacije) uz spremanje kao nova datoteka ili prepis originala; javna stranica s profilom i postovima (javni/privatni); favoriti te preuzimanje tuđih slika lokalno ili u svoju radnu okolinu; 3 početne testne slike pri prvoj prijavi.
+**Uključeno:** Prijava putem OAuth 2.0; privatna radna okolina (upload/download u najmanje 3 formata, mape, imenovanje i preimenovanje, prikaz slike); obrada slika (najmanje 5 filtara, 4 morfološka operatora, 3 geometrijske transformacije i 1 algoritam segmentacije) uz spremanje kao nova datoteka ili prepis originala; javna stranica s profilom i postovima (javni/privatni); favoriti te preuzimanje tuđih slika lokalno ili u svoju radnu okolinu; 3 početne testne slike pri prvoj prijavi; Artic galerija za pretragu djela iz javne domene i njihovo dodavanje u radnu okolinu.
 
 **Izvan opsega ili odgođeno:** Obrada vektorske grafike, komentari i lajkovi, pretraživanje korisnika, undo/redo te dodatni filtri i operatori iznad minimuma. Odgođeno zbog ograničenog vremena semestra; moguće kao budući rad ako ostane kapaciteta.
 
-**Vanjske ovisnosti:** Auth0 kao pružatelj identiteta (OAuth 2.0); Artic API (Art Institute of Chicago) za dohvat početnih testnih slika; biblioteke Pillow/OpenCV za obradu slika na backendu; platforma Railway za javno postavljanje aplikacije.
+**Vanjske ovisnosti:** Auth0 kao pružatelj identiteta (OAuth 2.0); Artic API (Art Institute of Chicago) za dohvat početnih testnih slika i za Artic galeriju; biblioteke Pillow/OpenCV za obradu slika na backendu; platforma Railway za javno postavljanje aplikacije.
 
 ## 1.4 Postojeći pristupi i opravdanost projekta
 
