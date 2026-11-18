@@ -54,6 +54,14 @@ export function DataProvider({ children }) {
       // Blob za prikaz (TIFF dolazi pretvoren u PNG) ili izvorna datoteka.
       getImageBlob: (id, { original = false } = {}) =>
         apiFetch(`/api/images/${id}/${original ? 'file' : 'preview'}`, { as: 'blob' }),
+      previewFilters: (id, fields) =>
+      apiFetch(`/api/images/${id}/filters`, {
+        ...json('POST', { ...fields, action: 'preview' }),
+        as: 'blob',
+      }),
+      saveFilters: mutation((id, fields) =>
+        apiFetch(`/api/images/${id}/filters`, json('POST', fields)),
+      ),
       renameImage: mutation((id, name) => apiFetch(`/api/images/${id}`, json('PATCH', { name }))),
       moveImage: mutation((id, folderId) =>
         apiFetch(`/api/images/${id}`, json('PATCH', { folder_id: folderId })),
