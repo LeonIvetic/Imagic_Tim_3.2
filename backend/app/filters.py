@@ -74,7 +74,7 @@ def apply_filter(image: Image.Image, name: FilterName) -> Image.Image:
         result.putalpha(image.getchannel("A"))
     return result
 
-def render_filters(path: Path, filters: list[FliterName], *, preview: bool) -> bytes:
+def render_filters(path: Path, filters: list[FilterName], *, preview: bool) -> bytes:
     with Image.open(path) as source:
         if getattr(source, "n_frames", 1) > 1:
             raise MultiFrameImage("Filtri podrzavaju slike s jednim kadrom ili stranicom.")
