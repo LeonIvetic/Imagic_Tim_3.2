@@ -1,6 +1,8 @@
 """UC-002: radna okolina (F-002, F-003, F-004, F-016, NF-05)."""
 import pytest
 
+from io import BytesIO
+from PIL import Image
 from tests.conftest import make_image
 
 
@@ -15,6 +17,58 @@ def upload(client, folder_id, name="slika.png", data=None, mime="image/png"):
         files={"file": (name, data if data is not None else make_image(), mime)},
     )
 
+@pytest.mark.parametrize("name,x,expected", [
+    ("grayscale", 0, (76, 76, 76)),
+    ("invert", 0, (0, 255, 255)),
+    ("pixelate", 9, (212, 0, 42)),
+    ("blur", 9, (139, 0, 116)),
+    ("derivative", 9, (47, 47, 47)),
+])
+def test_filter_preview(client, name, x, expected):
+    source = Image.new("RGB", (24, 24), (255, 0, 0))
+    source.paste((0, 0, 255), (10, 0, 24, 24))
+    buffer = BytesIO()
+    source.save(buffer, format="PNG")
+    image = upload(client, root_id(client), data=buffer.getvalue()).json()
+    path = f"/api/images/{image['id']}"
+    response = client.post(f"{path}/filters", json={
+        "action": "preview", "filters": [name], "source_updated_at": image["updated_at"],
+    })
+    assert response.status_code == 200
+    with Image.open(BytesIO(response.content)) as result:
+        assert result.size == source.size
+        assert result.convert("RGB").getpixel((x, 12)) == pytest.approx(expected, abs=1)
+        if name == "derivative":
+            assert result.getpixel((23, 12)) == 0
+    assert client.get(f"{path}/file").content == buffer.getvalue()
+    assert len(client.get("/api/images").json()) == 1
+
+
+def test_filter_copy_and_overwrite(client, login):
+    source = BytesIO()
+    Image.new("RGBA", (8, 8), (200, 30, 30, 121)).save(source, format="PNG")
+    image = upload(client, root_id(client), data=source.getvalue()).json()
+    path = f"/api/images/{image['id']}"
+    filters = {"filters": ["grayscale", "invert"], "source_updated_at": image["updated_at"]}
+    copy = client.post(f"{path}/filters", json={**filters, "action": "copy", "name": "slika.png"})
+    assert copy.status_code == 200
+    assert copy.json()["name"] == "slika (1).png"
+    assert client.get(f"{path}/file").content == source.getvalue()
+
+    post = client.post("/api/posts", json={"image_id": image["id"], "is_public": True}).json()
+    overwritten = client.post(f"{path}/filters", json={**filters, "action": "overwrite"})
+    assert overwritten.status_code == 200
+    assert overwritten.json()["id"] == image["id"]
+    assert overwritten.json()["updated_at"] != image["updated_at"]
+    assert client.post(f"{path}/filters", json={**filters, "action": "overwrite"}).status_code == 409
+    saved_bytes = client.get(f"{path}/file").content
+    assert client.get(f"/api/images/{copy.json()['id']}/file").content == saved_bytes
+    with Image.open(BytesIO(saved_bytes)) as result:
+        assert result.getpixel((0, 0)) == (174, 174, 174, 121)
+
+    login("ivo")
+    assert client.get(f"/api/posts/{post['id']}/image").content == saved_bytes
+    assert client.post(f"{path}/filters", json={**filters, "action": "preview"}).status_code == 404
 
 # ---------- Mape (F-003) ----------
 
