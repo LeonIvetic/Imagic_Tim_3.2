@@ -112,6 +112,7 @@ Akteri su opisani u [2.3 Dionici i akteri](2-Analiza-zahtjeva.md#23-dionici-i-ak
 
 - **A1 – Prepisivanje izvorne slike.** U 5. koraku korisnik odabire prepisivanje izvorne slike. Sustav sprema rezultat obrade umjesto izvorne slike.
 - **A2 – Odustajanje od spremanja.** Korisnik završava obradu bez spremanja rezultata.
+- **A3 – Poništavanje zadnjeg postupka.** Prije spremanja korisnik poništava zadnji primijenjeni postupak. Sustav prikazuje rezultat bez njega; nakon poništavanja prvog postupka prikazuje izvornu sliku.
 
 **Postuvjeti**
 

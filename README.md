@@ -18,7 +18,7 @@ Imagic je namijenjen korisnicima koji žele jednostavno obraditi rasterske slike
 
 **U izradi**
 
-- Obrada slika: filtri, morfološki operatori, geometrijske transformacije i segmentacija; rezultat se sprema kao nova datoteka ili prepisuje original. Prvi je u izradi filtar grayscale.
+- Obrada slika: filtri, morfološki operatori, geometrijske transformacije i segmentacija; rezultat se sprema kao nova datoteka ili prepisuje original. Ostvareno je 5 filtara (grayscale, invert, pixelate, blur, derivative); morfološki operatori, geometrijske transformacije i segmentacija su u izradi.
 - Pregled javnih stranica drugih korisnika, favoriti te preuzimanje tuđih slika lokalno ili u svoju radnu okolinu.
 - Galerija i pretraga djela s Artic API-ja.
 
@@ -77,7 +77,7 @@ Nakon svake promjene u `.env` server treba ponovno pokrenuti jer se `.env` čita
 | React + JavaScript | Korisničko sučelje: radna okolina, prikaz slike i alati za obradu, javne stranice. | Odluka tima; SPA koja komunicira s backendom preko REST API-ja. |
 | FastAPI (Python) | Poslužiteljski API: korisnici, datoteke, mape, postovi, favoriti. | Odluka tima; REST API prema frontendu. |
 | Auth0 (OAuth 2.0) | Prijava i registracija korisnika. | Zahtjev projektnog zadatka; aplikacija ne pohranjuje lozinke. |
-| Pillow (i po potrebi OpenCV) | Prepoznavanje formata učitanih slika, pretvaranje TIFF-a u PNG za prikaz; filtri, morfologija, geometrija i segmentacija (u izradi). | Odluka tima; obrada slika izvodi se na backendu. |
+| Pillow (i po potrebi OpenCV) | Prepoznavanje formata učitanih slika, pretvaranje TIFF-a u PNG za prikaz; filtri (ostvareni); morfologija, geometrija i segmentacija (u izradi). | Odluka tima; obrada slika izvodi se na backendu. |
 | PostgreSQL + SQLAlchemy + Alembic | Korisnici, mape, datoteke, postovi, favoriti; migracije sheme. | Odluka tima; relacijska baza za povezane podatke korisnika. |
 | Artic API | Dohvat 3 početne testne slike pri prvoj prijavi. | Vanjska ovisnost; ako API nije dostupan, koriste se ugrađene slike. |
 | Docker + Railway | Javno postavljanje: jedan Docker image (FastAPI + izgrađeni React), PostgreSQL i volume za slike. | Automatsko postavljanje pri svakom mergeu na `master`; vidi [docs/6.3](docs/6-Postavljanje-instalacija-i-konfiguracija.md#63-javno-postavljanje-i-administracija). |
