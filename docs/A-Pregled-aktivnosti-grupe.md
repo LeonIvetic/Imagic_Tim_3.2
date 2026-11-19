@@ -39,7 +39,7 @@ Kratice: `LeI` = Leon Ivetić; `FB` = Florijan Blažeka; `RV` = Roko Vrdoljak; `
 | Florijan Blažeka | Login ekran, zaglavlje s imenom i odjavom, stanja učitavanja i greške. Ekran radne okoline: mape (stvori, preimenuj, obriši), upload s provjerom, izbornik slike (preimenuj, premjesti, preuzmi, obriši), prazna stanja. | [dopuniti] |
 | Alan Ivanković | Baza: docker-compose.yml (PostgreSQL), db.py, model User, Alembic migracija, upute u docs/6. Modeli Folder, ImageFile, Post, FavoritePost i FavoriteProfile s kaskadama i CHECK ograničenjem, druga migracija, tablica varijabli u docs/6.2 | [dopuniti] |
 | Lorena Ivanković | ER model cijele aplikacije (PlantUML, opis tablica u docs/4, odluke o brisanju i jedinstvenosti). Integracija Artic API-ja, 3 početne slike pri prvoj prijavi (seedInitialImages), ekran /artic, preglednik slike i panel alata obrade (samo sučelje). | [dopuniti] |
-| Mihaela Miljavac | Obrasci uporabe UC-001 do UC-005, dijagram obrazaca uporabe, tablica sljedivosti 2.6, ekran profila s uređivanjem, postovi (javni/privatni), komponenta PostCard. | [dopuniti] |
+| Mihaela Miljavac | Obrasci uporabe UC-001 do UC-005, UML dijagram obrazaca uporabe, tablica sljedivosti zahtjeva (2.6). Ekran profila s uređivanjem, komponenta PostCard za prikaz slike, opisa i oznake vidljivosti objave (javno/privatno). Seed i tri testne slike. | 25 |
 
 ## A.4 Pregled promjena u repozitoriju
 
