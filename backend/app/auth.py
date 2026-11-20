@@ -6,11 +6,10 @@ import jwt
 from dotenv import load_dotenv
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.db import get_db 
+from app.db import engine, get_db
 from app.models import User 
 
 load_dotenv()
@@ -80,8 +79,26 @@ def get_current_user(
     if user is not None:
         return user
 
-    # Prva prijava: dohvati profil s Auth0 i stvori korisnika.
-    info = _fetch_userinfo(credentials.credentials)
+    # Prva prijava. Frontend odmah šalje više zahtjeva odjednom (gornja traka i radna
+    # okolina), pa ih zaključavamo po korisniku: prvi stvara korisnika i početne slike,
+    # a ostali čekaju i tek onda vide gotovu radnu okolinu (UC-001, korak 8).
+    # Zaključavanje je na zasebnoj konekciji jer sesija nakon commita vraća svoju u pool.
+    with engine.connect() as lock:
+        lock.execute(select(func.pg_advisory_lock(func.hashtext(sub))))
+        try:
+            return _create_user(db, sub, credentials.credentials)
+        finally:
+            lock.execute(select(func.pg_advisory_unlock(func.hashtext(sub))))
+            lock.commit()
+
+
+def _create_user(db: Session, sub: str, access_token: str) -> User:
+    """Stvara korisnika s korijenskom mapom i početnim slikama, ako ga drugi zahtjev već nije stvorio."""
+    user = db.scalar(select(User).where(User.auth0_sub == sub))
+    if user is not None:
+        return user
+
+    info = _fetch_userinfo(access_token)
     user = User(
         auth0_sub=sub,
         email=info.get("email"),
@@ -89,18 +106,10 @@ def get_current_user(
         avatar_url=info.get("picture"),
     )
     db.add(user)
-    try:
-        db.commit()
-    except IntegrityError:
-        # Dva istovremena prva zahtjeva istog korisnika: drugi je već stvorio redak.
-        db.rollback()
-        user = db.scalar(select(User).where(User.auth0_sub == sub))
-        if user is None:
-            raise
-        return user
+    db.commit()
     db.refresh(user)
 
-    # Prva prijava: korijenska mapa i 3 početne slike (UC-001, korak 8).
+    # Korijenska mapa i 3 početne slike (UC-001, korak 8).
     from app.seed import seed_initial_images
     from app.workspace import get_or_create_root
 
