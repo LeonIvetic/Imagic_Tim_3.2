@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useData } from '../data/useData.js'
-import { downloadImage, formatBytes, useImageUrl } from '../data/images.js'
+import { downloadImage, formatBytes, splitImageName, useImageUrl } from '../data/images.js'
 import Dialog, { NameDialog } from '../components/Dialog.jsx'
 import './Workspace.css'
 
@@ -12,8 +12,6 @@ const FILTERS = {
   blur: 'Zamućenje',
   derivative: 'Derivacija'
 }
-
-const EXTENSIONS = { jpeg: 'jpg', png: 'png', tiff: 'tif', webp: 'webp' }
 
 export default function ImageViewer() {
   const { imageId } = useParams()
@@ -102,8 +100,8 @@ function ImageViewerPage({ imageId }) {
 
   const folder = image.path[image.path.length - 1]
 
-  const stem = image.name.replace(/\.[^.]+$/, '') || 'slika'
-  const copyName = `${stem.slice(0, 240)}-obrada.${EXTENSIONS[image.format]}`
+  const { stem, suffix } = splitImageName(image.name, image.format)
+  const copyStem = `${(stem || 'slika').slice(0, 240)}-obrada`
 
   return (
     <div className="viewer">
@@ -206,7 +204,8 @@ function ImageViewerPage({ imageId }) {
         <NameDialog
           title="Preimenuj sliku"
           label="Novi naziv"
-          initial={image.name}
+          initial={stem}
+          suffix={suffix}
           onSubmit={(name) => data.renameImage(image.id, name)}
           onClose={() => setDialog(null)}
         />
@@ -215,7 +214,8 @@ function ImageViewerPage({ imageId }) {
         <NameDialog
           title="Spremi kao novu sliku"
           label="Naziv nove datoteke"
-          initial={copyName}
+          initial={copyStem}
+          suffix={suffix}
           onSubmit={(name) => saveFilterResult('copy', name)}
           onClose={() => setDialog(null)}
         />

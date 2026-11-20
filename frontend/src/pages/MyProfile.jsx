@@ -13,8 +13,11 @@ function ProfileForm({ profile, busy, onSave, onCancel }) {
         event.preventDefault()
         const fields = new FormData(event.currentTarget)
 
+        // Korisničko ime nije obavezno dok ga korisnik ne odabere; prazno se ne šalje,
+        // pa se ostali podaci profila mogu spremiti i bez njega.
+        const username = fields.get('username').trim()
         onSave({
-            username: fields.get('username').trim(),
+            ...(username && { username }),
             display_name: fields.get('display_name').trim(),
             bio: fields.get('bio').trim(),
             avatar_url: fields.get('avatar_url').trim(),
@@ -32,7 +35,8 @@ function ProfileForm({ profile, busy, onSave, onCancel }) {
                     defaultValue={profile.username ?? ''}
                     pattern="[A-Za-z0-9_.]+"
                     maxLength={50}
-                    required
+                    // Jednom odabrano korisničko ime ne može se obrisati (backend), samo promijeniti.
+                    required={Boolean(profile.username)}
                 />
             </label>
 
@@ -42,7 +46,6 @@ function ProfileForm({ profile, busy, onSave, onCancel }) {
                     name="display_name"
                     defaultValue={profile.display_name ?? ''}
                     maxLength={255}
-                    required
                 />
             </label>
 

@@ -205,6 +205,29 @@ def test_preimenovanje_i_premjestanje_slike(client):
     assert [i["name"] for i in client.get(f"/api/folders/{folder['id']}").json()["images"]] == ["b.png"]
 
 
+# ---------- Nastavak imena odgovara formatu ----------
+
+@pytest.mark.parametrize("name,expected", [
+    ("b.png", "b.png"),
+    ("b.PNG", "b.PNG"),
+    ("b", "b.png"),
+    ("b.jpg", "b.png"),
+    ("moj.odmor", "moj.odmor.png"),
+])
+def test_preimenovanje_uskladjuje_nastavak(client, name, expected):
+    img = upload(client, root_id(client), "a.png").json()
+    r = client.patch(f"/api/images/{img['id']}", json={"name": name})
+    assert r.status_code == 200
+    assert r.json()["name"] == expected
+
+
+def test_upload_s_krivim_nastavkom_dobiva_ispravan(client):
+    r = upload(client, root_id(client), "fotka.jpg", make_image("PNG"), "image/jpeg")
+    assert r.json()["name"] == "fotka.png"
+    jpeg = upload(client, root_id(client), "fotka.jpeg", make_image("JPEG"), "image/jpeg")
+    assert jpeg.json()["name"] == "fotka.jpeg"
+
+
 def test_brisanje_slike(client):
     img = upload(client, root_id(client)).json()
     assert client.delete(f"/api/images/{img['id']}").status_code == 204

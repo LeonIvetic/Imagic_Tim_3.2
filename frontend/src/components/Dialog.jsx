@@ -58,30 +58,47 @@ export default function Dialog({ title, children, submitLabel = 'Spremi', danger
 }
 
 // Dijalog s jednim tekstualnim poljem (nova mapa, preimenovanje).
-export function NameDialog({ title, label, initial = '', submitLabel, onSubmit, onClose }) {
+// Sa `suffix` (npr. '.png') uređuje se samo ime bez nastavka, a nastavak je fiksan,
+// pa ime slike uvijek odgovara njezinom formatu.
+export function NameDialog({ title, label, initial = '', suffix = '', submitLabel, onSubmit, onClose }) {
   const [name, setName] = useState(initial)
   const inputRef = useRef(null)
 
   useEffect(() => {
     const input = inputRef.current
     input.focus()
-    // Kod preimenovanja slike označi ime bez nastavka.
+    if (suffix) {
+      input.select()
+      return
+    }
+    // Bez fiksnog nastavka označi ime do zadnje točke.
     const dot = initial.lastIndexOf('.')
     input.setSelectionRange(0, dot > 0 ? dot : initial.length)
-  }, [initial])
+  }, [initial, suffix])
+
+  const input = (
+    <input
+      ref={inputRef}
+      className="input"
+      value={name}
+      maxLength={255 - suffix.length}
+      required
+      onChange={(e) => setName(e.target.value)}
+    />
+  )
 
   return (
-    <Dialog title={title} submitLabel={submitLabel} onSubmit={() => onSubmit(name)} onClose={onClose}>
+    <Dialog title={title} submitLabel={submitLabel} onSubmit={() => onSubmit(name.trim() + suffix)} onClose={onClose}>
       <label className="field">
         <span className="field__label">{label}</span>
-        <input
-          ref={inputRef}
-          className="input"
-          value={name}
-          maxLength={255}
-          required
-          onChange={(e) => setName(e.target.value)}
-        />
+        {suffix ? (
+          <span className="input-suffix">
+            {input}
+            <span className="input-suffix__text">{suffix}</span>
+          </span>
+        ) : (
+          input
+        )}
       </label>
     </Dialog>
   )

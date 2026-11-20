@@ -1,8 +1,10 @@
+import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import Logo from "../components/Logo.jsx";
 import Avatar from "../components/Avatar.jsx";
 import { LogoutButton } from "../auth/AuthButtons.jsx";
+import { useData } from "../data/useData.js";
 
 import {
     FolderIcon,
@@ -28,7 +30,25 @@ const NAV_ITEMS = [
 
 export default function AppLayout() {
     const { user } = useAuth0();
-    const name = user?.name ?? user?.email ?? 'Korisnik';
+    const data = useData();
+    const [profile, setProfile] = useState(null);
+
+    // Ime i slika iz našeg profila (/api/users/me), da se izmjene profila odmah vide
+    // i ovdje. Dok se profil ne učita (ili ako dohvat ne uspije), koriste se podaci s Auth0.
+    useEffect(() => {
+        let cancelled = false;
+        data.getMe()
+            .then((me) => !cancelled && setProfile(me))
+            .catch(() => {});
+        return () => {
+            cancelled = true;
+        };
+        // data.version se mijenja nakon svake izmjene
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data.version]);
+
+    const name = profile?.display_name || user?.name || user?.email || 'Korisnik';
+    const picture = profile ? profile.avatar_url : user?.picture;
 
     return (
         <div className="shell">
@@ -37,7 +57,7 @@ export default function AppLayout() {
                     <Logo />
                 </Link>
                 <div className="topbar__user">
-                    <Avatar user={user} />
+                    <Avatar key={picture} user={{ name, email: user?.email, picture }} />
                     <span className="topbar__name">{name}</span>
                     <LogoutButton className="btn btn--ghost btn--sm" />
                 </div>

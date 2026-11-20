@@ -101,6 +101,20 @@ def clean_name(name: str) -> str:
     return name
 
 
+def name_with_suffix(name: str, fmt: str) -> str:
+    """Usklađuje nastavak imena s formatom slike, da se datoteka preuzme s ispravnim nastavkom.
+
+    'slika' -> 'slika.png', 'slika.jpg' (a format je PNG) -> 'slika.png', 'slika.JPEG' ostaje.
+    """
+    allowed = storage.SUFFIXES[fmt]
+    p = PurePath(name)
+    if p.suffix.lower() in allowed:
+        return name
+    known = {s for suffixes in storage.SUFFIXES.values() for s in suffixes}
+    stem = p.stem if p.suffix.lower() in known else name
+    return f"{stem[:255 - len(allowed[0])]}{allowed[0]}"
+
+
 def get_or_create_root(db: Session, user: User) -> Folder:
     """Svaki korisnik ima točno jednu korijensku mapu (docs/4)."""
     root = db.scalar(select(Folder).where(Folder.owner_id == user.id, Folder.parent_id.is_(None)))
@@ -216,7 +230,7 @@ def store_image(db: Session, folder: Folder, name: str, data: bytes) -> ImageFil
     except storage.InvalidImage as e:
         raise HTTPException(415, str(e))
 
-    name = unique_image_name(db, folder.id, clean_name(name))
+    name = unique_image_name(db, folder.id, name_with_suffix(clean_name(name), fmt))
     rel = storage.save(data, fmt)
     image = ImageFile(
         folder_id=folder.id,
@@ -450,7 +464,7 @@ def update_image(image_id: int, body: ImageUpdate, user: User = Depends(get_curr
     target = image.folder_id
     if body.folder_id is not None:
         target = own_folder(db, user, body.folder_id).id
-    name = clean_name(body.name) if body.name is not None else image.name
+    name = name_with_suffix(clean_name(body.name), image.format) if body.name is not None else image.name
     if name_taken_image(db, target, name, exclude=image.id):
         raise HTTPException(409, "Slika s tim imenom već postoji u odredišnoj mapi.")
     image.name, image.folder_id = name, target

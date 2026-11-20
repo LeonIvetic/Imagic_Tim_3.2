@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useData } from '../data/useData.js'
-import { downloadImage, formatBytes, useImageUrl, validateFile } from '../data/images.js'
+import { downloadImage, formatBytes, splitImageName, useImageUrl, validateFile } from '../data/images.js'
 import Dialog, { NameDialog } from '../components/Dialog.jsx'
 import { FolderIcon } from '../components/Icons.jsx'
 import './Workspace.css'
@@ -257,16 +257,28 @@ function WorkspaceDialog({ dialog, folder, onClose }) {
         />
       )
     case 'renameFolder':
-    case 'renameImage':
       return (
         <NameDialog
-          title={kind === 'renameFolder' ? 'Preimenuj mapu' : 'Preimenuj sliku'}
+          title="Preimenuj mapu"
           label="Novi naziv"
           initial={item.name}
-          onSubmit={(name) => (kind === 'renameFolder' ? data.renameFolder(item.id, name) : data.renameImage(item.id, name))}
+          onSubmit={(name) => data.renameFolder(item.id, name)}
           onClose={onClose}
         />
       )
+    case 'renameImage': {
+      const { stem, suffix } = splitImageName(item.name, item.format)
+      return (
+        <NameDialog
+          title="Preimenuj sliku"
+          label="Novi naziv"
+          initial={stem}
+          suffix={suffix}
+          onSubmit={(name) => data.renameImage(item.id, name)}
+          onClose={onClose}
+        />
+      )
+    }
     case 'moveFolder':
     case 'moveImage':
       return <MoveDialog kind={kind} item={item} onClose={onClose} />
