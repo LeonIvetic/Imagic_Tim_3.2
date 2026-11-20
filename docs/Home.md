@@ -69,6 +69,7 @@ Slijedi FER-ova [pravila o primjerenoj uporabi umjetne inteligencije](https://ww
 | Claude (Anthropic) | Claude Opus 5.5 (Claude Code) | Leon Ivetić | Konfiguracija javnog postavljanja (Docker, Railway), upute za postavljanje, bilješke sa sastanka 16.11.2026. i pregled dokumentacije |
 | Claude (Anthropic) | Claude Sonnet 5.5 | Feđa Mitić | Implementacija svih 5 filtara za slike (greyscale, invert, pixelate, blur, derivative), backend i frontend funkcionalnosti |
 | Claude (Anthropic) | Claude Sonnet 5.5 | Roko Vrdoljak | Pomoć u izradi dijagrama razreda, točnije u izradi budućih razreda, metoda i atributa |
+| Claude (Anthropic) | Claude Opus 5.5 (Claude Code) | Leon Ivetić | Opća pomoć pri pisanju koda i otklanjanju grešaka (debugiranju) te pregled koda i dokumentacije prije prve predaje |
 
 ### Opseg doprinosa umjetne inteligencije
 
@@ -81,7 +82,8 @@ Slijedi FER-ova [pravila o primjerenoj uporabi umjetne inteligencije](https://ww
 | `Dockerfile`, `.dockerignore`, posluživanje frontenda u `backend/app/main.py`, `normalize_db_url` u `backend/app/db.py`, `backend/alembic/env.py` | Generiranje koda | Docker image u dvije faze, posluživanje izgrađenog Reacta iz FastAPI-ja, pretvorba adrese baze za Railway | Leon Ivetić je odabrao platformu, zadao upute, lokalno provjerio Docker image i postavio aplikaciju na Railway i Auth0 | PR #48 |
 | `docs/6-Postavljanje-instalacija-i-konfiguracija.md` (6.3), `README.md` (Postavljanje) | Izrada teksta | Upute za javno postavljanje i opis arhitekture postavljanja | Leon Ivetić je zadao opseg i upisao javnu domenu | PR #49 |
 | `docs/meeting-notes/2026-11-16-generalna-proba.md` | Izrada teksta | Bilješke prema predlošku prijašnjih sastanaka | Leon Ivetić je zadao podjelu posla i odluku o pohrani slika | Repozitorij |
-| Cijela dokumentacija (`README.md`, `docs/`) | Pregled i ispravak | Popis proturječja dokumentacije i koda te ispravci (stanje projekta, zahtjevi i sljedivost, arhitektura i model podataka) | Leon Ivetić je pregledao i prihvatio izmjene | Grana `docs/pregled-dokumentacije` |
+| Backend i frontend (`backend/app/`, `backend/tests/`, `frontend/src/`) | Pomoć pri pisanju koda i debugiranju | Prijedloge koda i ispravke pronađenih grešaka | Leon Ivetić je zadao probleme, pregledao i isprobao izmjene te ih sam commitao | PR #61, #62, #63 |
+| Cijela dokumentacija (`README.md`, `docs/`) | Pregled i ispravak | Popis proturječja dokumentacije i koda te ispravci (stanje projekta, zahtjevi i sljedivost, arhitektura i model podataka); preoblikovanje obrazaca uporabe u format predloška | Leon Ivetić je pregledao i prihvatio izmjene | Grane `docs/pregled-dokumentacije` i `docs/predaja-1` |
 
 Stranice i artefakti koji nisu navedeni iznad izrađeni su bez pomoći generativne umjetne inteligencije.
 
