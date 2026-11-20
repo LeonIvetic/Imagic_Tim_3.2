@@ -4,6 +4,26 @@ import { useData } from './useData.js'
 export const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/tiff', 'image/webp']
 export const MAX_BYTES = 10 * 1024 * 1024
 
+// Dopušteni nastavci po formatu (prvi je zadani); isto kao storage.SUFFIXES na backendu.
+const SUFFIXES = {
+  jpeg: ['.jpg', '.jpeg'],
+  png: ['.png'],
+  tiff: ['.tif', '.tiff'],
+  webp: ['.webp'],
+}
+
+// 'Slika.PNG' (png) -> { stem: 'Slika', suffix: '.PNG' }; kriv ili nepostojeći
+// nastavak zamjenjuje se zadanim za format, kao što radi i backend.
+export function splitImageName(name, format) {
+  const allowed = SUFFIXES[format] ?? []
+  const dot = name.lastIndexOf('.')
+  const current = dot > 0 ? name.slice(dot) : ''
+  if (allowed.includes(current.toLowerCase())) return { stem: name.slice(0, dot), suffix: current }
+  const known = Object.values(SUFFIXES).flat()
+  const stem = known.includes(current.toLowerCase()) ? name.slice(0, dot) : name
+  return { stem, suffix: allowed[0] ?? '' }
+}
+
 // Provjera prije slanja (NF-05). Backend svejedno provjerava sadržaj datoteke.
 export function validateFile(file) {
   if (!ALLOWED_TYPES.includes(file.type)) {

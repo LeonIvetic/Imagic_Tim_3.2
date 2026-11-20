@@ -319,6 +319,19 @@
   border-color: var(--orange-400);
   box-shadow: 0 0 0 3px var(--orange-100);
 }
+.input-suffix {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.input-suffix .input {
+  flex: 1;
+  min-width: 0;
+}
+.input-suffix__text {
+  color: var(--ink-soft);
+  font-weight: 500;
+}
 .field-error {
   font-size: 0.9rem;
   color: var(--danger) !important;

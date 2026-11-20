@@ -24,6 +24,13 @@ FORMATS = {
     "WEBP": ("webp", "webp", "image/webp"),
 }
 MIME_BY_FORMAT = {fmt: mime for fmt, _, mime in FORMATS.values()}
+# Dopušteni nastavci imena po formatu; prvi je zadani.
+SUFFIXES = {
+    "jpeg": (".jpg", ".jpeg"),
+    "png": (".png",),
+    "tiff": (".tif", ".tiff"),
+    "webp": (".webp",),
+}
 # Preglednici ne prikazuju TIFF, pa se za prikaz pretvara u PNG.
 BROWSER_FORMATS = {"jpeg", "png", "webp"}
 
