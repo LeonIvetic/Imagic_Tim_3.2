@@ -126,9 +126,33 @@ Napomena: Entiteti su u dijagramu imenovani u jednini, jednako kao klase u kodu 
 
 **Cilj:** Modelirati i prikazati razrede ili sučelja potrebna za dodjelu odgovornosti, operacija i veza u reprezentativnom dijelu sustava.
 
-**Dijagram razreda:** [Dopuniti.]  
-**PlantUML izvor:** [Dopuniti.]  
-**Referenca na kod pri završnom pregledu:** [Dopuniti.]
+**Dijagram razreda:**
+
+![Dijagram razreda](dijagram-razreda.png)
+
+**PlantUML izvor:** [dijagram-razreda.puml](dijagram-razreda.puml)  
+**Referenca na kod pri završnom pregledu:** `backend/app/models.py`, `backend/app/users.py`, `backend/app/posts.py`, `backend/app/workspace.py`, `backend/app/auth.py`, `backend/app/storage.py`, `backend/app/filters.py`, `backend/app/seed.py`
+
+Entiteti (`<<entity>>`) su SQLAlchemy modeli, routeri (`<<control>>`) primaju HTTP zahtjeve i provjeravaju vlasništvo nad resursom, a servisi (`<<utility>>`) obavljaju prijavu (`Auth`), rad s datotekama (`Storage`), obradu slike (`Filters`) i stvaranje početnih slika (`Seed`). Od DTO-ova (Pydantic shema) prikazano je pet reprezentativnih, a ostali se pojavljuju samo kao tipovi u potpisima operacija. Radi preglednosti izostavljeni su parametri `user` i `db` i konstante.
+
+Budući dio (nije još napravljen) označen je sa `<<planirano>>` te obojan sivom bojom:
+
+| Planirano | Zahtjev / izvor | Obrazac uporabe |
+|---|---|---|
+| `Morphology`, `Geometry`, `Segmentation`, `FlipAxis`, `FilterName`, `OperationStep`, `steps` u `ImageFilterRequest`, `Filters.apply_step` | F-006 – F-008 | UC-003 |
+| `UsersRouter.list_users`, `UsersRouter.get_profile`, `PostsRouter.public_posts`, `PublicProfileOut` | F-013 | UC-005 |
+| `FavoritesRouter`, `FavoritesOut` (tablice `FavoritePost` i `FavoriteProfile` već postoje) | F-014 | UC-008 |
+| `PostsRouter.download_post_image`, `PostsRouter.copy_post_image`, `CopyImageRequest` | F-015 | UC-009 |
+| `ArticRouter`, `ArticClient`, `ArtworkOut`, `AddArtworkRequest` | F-017 | UC-011 |
+| `ObjectStorage` (trenutno je pohrana slika na disku) | AS-04 | – |
+
+
+
+Napominjem da strani ključevi nisu navedeni kao atributi nego su prikazani kao veze. 
+Mapa–podmapa, mapa–slika i korisnik–post su kompozicije jer se primjenjuje `ON DELETE CASCADE`. 
+Korisnik–mapa i post–slika su obična pridruživanja jer podmapa već pripada nadmapi, a post korisniku, a dio može pripadati samo jednoj cjelini. 
+Smjer je strelicom označen samo na vezama s jasnim jednosmjernim pristupom. Na ostalim vezama nije označen jer, prema prezentaciji 6 sa predavanja: „izostanak strelice ne znači nužno obostranu navigabilnost". 
+
 
 ## 4.4 Ponašanje tijekom izvođenja
 
