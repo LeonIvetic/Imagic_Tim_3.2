@@ -1,0 +1,343 @@
+@startuml dijagram-razreda
+skinparam dpi 120
+skinparam defaultFontName "DejaVu Sans"
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam linetype polyline
+skinparam nodesep 55
+skinparam ranksep 65
+hide circle
+skinparam classFontStyle bold
+skinparam classAttributeFontStyle plain
+skinparam classStereotypeFontStyle italic
+hide empty members
+
+skinparam class {
+  BackgroundColor #8FD3F5
+  BorderColor #3A6E8F
+  ArrowColor #333333
+  FontSize 13
+  AttributeFontSize 12
+  StereotypeFontSize 11
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #555555
+  FontSize 12
+}
+skinparam note {
+  BackgroundColor #FFFFCC
+  BorderColor #999999
+  FontSize 11
+}
+
+package "pkg Imagic" <<Frame>> {
+
+  class "<b>User</b>" as User <<entity>> {
+    + id : int
+    + auth0_sub : String
+    + email : String [0..1]
+    + username : String [0..1]
+    + display_name : String [0..1]
+    + avatar_url : String [0..1]
+    + bio : String [0..1]
+    + created_at : DateTime
+  }
+
+  class "<b>Folder</b>" as Folder <<entity>> {
+    + id : int
+    + name : String
+    + created_at : DateTime
+  }
+
+  class "<b>ImageFile</b>" as ImageFile <<entity>> {
+    + id : int
+    + name : String
+    + format : String
+    + size_bytes : int [0..1]
+    + file_path : String
+    + created_at : DateTime
+    + updated_at : DateTime
+  }
+
+  class "<b>Post</b>" as Post <<entity>> {
+    + id : int
+    + description : String
+    + is_public : boolean = false
+    + created_at : DateTime
+    + updated_at : DateTime
+  }
+
+  class "<b>FavoritePost</b>" as FavoritePost <<entity>> {
+    + created_at : DateTime
+  }
+
+  class "<b>FavoriteProfile</b>" as FavoriteProfile <<entity>> {
+    + created_at : DateTime
+  }
+
+  class "<b>UsersRouter</b>" as UsersRouter <<control>> {
+    {static} + read_me() : UserOut
+    {static} + update_me(body : ProfileUpdate) : UserOut
+    .. planirano ..
+    {static} + list_users() : List<PublicProfileOut>
+    {static} + get_profile(username : String) : PublicProfileOut
+  }
+
+  class "<b>PostsRouter</b>" as PostsRouter <<control>> {
+    {static} + my_posts() : List<PostOut>
+    {static} + create_post(body : PostCreate) : PostOut
+    {static} + update_post(post_id : int, body : PostUpdate) : PostOut
+    {static} + delete_post(post_id : int) : void
+    {static} + post_image(post_id : int) : Response
+    .. planirano ..
+    {static} + public_posts(username : String) : List<PostOut>
+    {static} + download_post_image(post_id : int) : Response
+    {static} + copy_post_image(post_id : int, body : CopyImageRequest) : ImageOut
+  }
+
+  class "<b>WorkspaceRouter</b>" as WorkspaceRouter <<control>> {
+    {static} + root_folder() : FolderOut
+    {static} + all_folders() : List<FolderOut>
+    {static} + folder_content(folder_id : int) : FolderContent
+    {static} + create_folder(body : FolderCreate) : FolderOut
+    {static} + update_folder(folder_id : int, body : FolderUpdate) : FolderOut
+    {static} + delete_folder(folder_id : int) : void
+    {static} + all_images() : List<ImageOut>
+    {static} + upload_image(folder_id : int, file : UploadFile) : ImageOut
+    {static} + image_detail(image_id : int) : ImageDetail
+    {static} + image_file(image_id : int, download : boolean) : Response
+    {static} + image_preview(image_id : int) : Response
+    {static} + filter_image(image_id : int, body : ImageFilterRequest) : ImageOut
+    {static} + update_image(image_id : int, body : ImageUpdate) : ImageOut
+    {static} + delete_image(image_id : int) : void
+    {static} + get_or_create_root(user : User) : Folder
+    {static} + own_image(user : User, image_id : int, lock : boolean = false) : ImageFile
+    {static} + store_image(folder : Folder, name : String, data : bytes) : ImageFile
+    {static} + preview_response(image : ImageFile) : Response
+  }
+
+  class "<b>Auth</b>" as Auth <<utility>> {
+    {static} + verify_token(token : String) : dict
+    {static} + get_current_user(credentials : HTTPAuthorizationCredentials) : User
+  }
+
+  class "<b>Storage</b>" as Storage <<utility>> {
+    {static} + detect_format(data : bytes) : String
+    {static} + extension(fmt : String) : String
+    {static} + save(data : bytes, fmt : String) : String
+    {static} + absolute(rel : String) : Path
+    {static} + delete(rel : String) : void
+    {static} + dimensions(rel : String) : List<int>
+    {static} + browser_preview(rel : String) : bytes
+  }
+
+  class "<b>Filters</b>" as Filters <<utility>> {
+    {static} + render_filters(path : Path, filters : List<FilterName>, preview : boolean) : bytes
+    {static} + apply_filter(image : Image, name : FilterName) : Image
+    {static} + derivative(image : Image) : Image
+    {static} + working_image(image : Image) : Image
+    .. planirano ..
+    {static} + apply_step(image : Image, step : OperationStep) : Image
+  }
+
+  class "<b>Seed</b>" as Seed <<utility>> {
+    {static} + seed_initial_images(root : Folder) : void
+  }
+
+  class "<b>ImageFilterRequest</b>" as ImageFilterRequest {
+    + filters : List<FilterName> [1..*]
+    + source_updated_at : DateTime
+    + action : String
+    + name : String [0..1]
+    .. planirano ..
+    + steps : List<OperationStep> [0..*]
+  }
+
+  class "<b>PostCreate</b>" as PostCreate {
+    + image_id : int
+    + description : String = ""
+    + is_public : boolean = false
+  }
+
+  class "<b>PostOut</b>" as PostOut {
+    + id : int
+    + user_id : int
+    + image_id : int
+    + image_name : String
+    + image_updated_at : DateTime
+    + description : String
+    + is_public : boolean
+    + created_at : DateTime
+    + updated_at : DateTime
+  }
+
+  class "<b>ProfileUpdate</b>" as ProfileUpdate {
+    + username : String [0..1]
+    + display_name : String [0..1]
+    + bio : String [0..1]
+    + avatar_url : String [0..1]
+  }
+
+  class "<b>FolderContent</b>" as FolderContent {
+    + folder : FolderOut
+    + path : List<FolderOut>
+    + folders : List<FolderOut>
+    + images : List<ImageOut>
+  }
+
+  class "<b>FavoritesRouter</b>" as FavoritesRouter <<control>> <<planirano>> #E6E6E6 {
+    {static} + list_favorites() : FavoritesOut
+    {static} + add_favorite_post(post_id : int) : void
+    {static} + remove_favorite_post(post_id : int) : void
+    {static} + add_favorite_profile(user_id : int) : void
+    {static} + remove_favorite_profile(user_id : int) : void
+  }
+
+  class "<b>ArticRouter</b>" as ArticRouter <<control>> <<planirano>> #E6E6E6 {
+    {static} + search_artworks(query : String, page : int = 1) : List<ArtworkOut>
+    {static} + add_artwork(body : AddArtworkRequest) : ImageOut
+  }
+
+  class "<b>ArticClient</b>" as ArticClient <<utility>> <<planirano>> #E6E6E6 {
+    {static} + search(query : String, page : int) : List<ArtworkOut>
+    {static} + download_image(image_id : String) : bytes
+  }
+
+  class "<b>ObjectStorage</b>" as ObjectStorage <<utility>> <<planirano>> #E6E6E6 {
+    {static} + upload(key : String, data : bytes) : void
+    {static} + download(key : String) : bytes
+    {static} + delete(key : String) : void
+  }
+
+  class "<b>Morphology</b>" as Morphology <<utility>> <<planirano>> #E6E6E6 {
+    {static} + erosion(image : Image, size : int) : Image
+    {static} + dilation(image : Image, size : int) : Image
+    {static} + opening(image : Image, size : int) : Image
+    {static} + closing(image : Image, size : int) : Image
+  }
+
+  class "<b>Geometry</b>" as Geometry <<utility>> <<planirano>> #E6E6E6 {
+    {static} + resize(image : Image, width : int, height : int) : Image
+    {static} + rotate(image : Image, angle : int) : Image
+    {static} + flip(image : Image, axis : FlipAxis) : Image
+  }
+
+  class "<b>Segmentation</b>" as Segmentation <<utility>> <<planirano>> #E6E6E6 {
+    {static} + otsu(image : Image) : Image
+  }
+
+  class "<b>OperationStep</b>" as OperationStep <<planirano>> #E6E6E6 {
+    + name : FilterName
+    + size : int [0..1]
+    + width : int [0..1]
+    + height : int [0..1]
+    + angle : int [0..1]
+    + axis : FlipAxis [0..1]
+  }
+
+  class "<b>PublicProfileOut</b>" as PublicProfileOut <<planirano>> #E6E6E6 {
+    + id : int
+    + username : String [0..1]
+    + display_name : String [0..1]
+    + avatar_url : String [0..1]
+    + bio : String [0..1]
+  }
+
+  class "<b>FavoritesOut</b>" as FavoritesOut <<planirano>> #E6E6E6 {
+    + posts : List<PostOut>
+    + profiles : List<PublicProfileOut>
+  }
+
+  class "<b>CopyImageRequest</b>" as CopyImageRequest <<planirano>> #E6E6E6 {
+    + folder_id : int
+    + name : String [0..1]
+  }
+
+  class "<b>ArtworkOut</b>" as ArtworkOut <<planirano>> #E6E6E6 {
+    + id : int
+    + title : String
+    + artist : String [0..1]
+    + image_id : String
+  }
+
+  class "<b>AddArtworkRequest</b>" as AddArtworkRequest <<planirano>> #E6E6E6 {
+    + artwork_id : int
+    + folder_id : int
+  }
+
+  enum "<b>FlipAxis</b>" as FlipAxis <<enumeration>> <<planirano>> #E6E6E6 {
+    horizontal
+    vertical
+  }
+
+  enum "<b>FilterName</b>" as FilterName <<enumeration>> {
+    grayscale
+    invert
+    pixelate
+    blur
+    derivative
+    .. planirano ..
+    erosion
+    dilation
+    opening
+    closing
+    resize
+    rotate
+    flip
+    otsu
+  }
+
+  User "1" -- "0..*" Folder : - mape
+  Folder "0..1" *-- "0..*" Folder : - podmape
+  Folder "1" *-- "0..*" ImageFile : - slike
+  User "1" *-- "0..*" Post : - postovi
+  Post "0..*" --> "1" ImageFile : - slika
+
+  User "0..*" -- "0..*" Post : favorizira >
+  (User, Post) .. FavoritePost
+
+  User "1" -- "0..*" FavoriteProfile : - korisnik
+  FavoriteProfile "0..*" --> "1" User : - favoriziraniProfil
+
+  ImageFilterRequest --> "1..*" FilterName : - filters
+
+  UsersRouter ..> Auth : <<use>>
+  PostsRouter ..> Auth : <<use>>
+  WorkspaceRouter ..> Auth : <<use>>
+  PostsRouter ..> WorkspaceRouter : <<call>>
+  WorkspaceRouter ..> Storage : <<use>>
+  WorkspaceRouter ..> Filters : <<use>>
+  Filters ..> FilterName
+  Auth ..> User : <<create>>
+  Auth ..> Seed : <<call>>
+  Auth ..> WorkspaceRouter : <<call>>
+  Seed ..> WorkspaceRouter : <<call>>
+
+  UsersRouter ..> ProfileUpdate
+  PostsRouter ..> PostCreate
+  PostsRouter ..> PostOut
+  WorkspaceRouter ..> ImageFilterRequest
+  WorkspaceRouter ..> FolderContent
+
+  ImageFilterRequest --> "0..*" OperationStep : - steps
+  OperationStep --> "1" FilterName : - name
+  OperationStep --> "0..1" FlipAxis : - axis
+  FavoritesRouter ..> Auth : <<use>>
+  FavoritesRouter ..> FavoritePost : <<create>>
+  FavoritesRouter ..> FavoriteProfile : <<create>>
+  FavoritesRouter ..> FavoritesOut
+  UsersRouter ..> PublicProfileOut
+  PostsRouter ..> CopyImageRequest
+  ArticRouter ..> Auth : <<use>>
+  ArticRouter ..> ArticClient : <<call>>
+  ArticRouter ..> WorkspaceRouter : <<call>>
+  ArticRouter ..> AddArtworkRequest
+  ArticClient ..> ArtworkOut : <<create>>
+  Storage ..> ObjectStorage : <<call>>
+  Filters ..> Morphology : <<call>>
+  Filters ..> Geometry : <<call>>
+  Filters ..> Segmentation : <<call>>
+
+}
+@enduml
