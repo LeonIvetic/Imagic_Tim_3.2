@@ -38,6 +38,8 @@ def detect_format(data: bytes) -> str:
         with Image.open(io.BytesIO(data)) as img:
             pil_format = img.format
             img.verify()
+    except Image.DecompressionBombError:
+        raise InvalidImage("Slika ima previše piksela.")
     except (UnidentifiedImageError, OSError, SyntaxError):
         raise InvalidImage("Datoteka nije ispravna slika.")
     if pil_format not in FORMATS:
@@ -72,7 +74,7 @@ def dimensions(rel: str) -> tuple[int, int] | None:
     try:
         with Image.open(absolute(rel)) as img:
             return img.size
-    except (OSError, UnidentifiedImageError):
+    except (OSError, UnidentifiedImageError, Image.DecompressionBombError):
         return None
 
 

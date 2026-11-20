@@ -228,3 +228,42 @@ def test_tudja_radna_okolina_nedostupna(client, login):
     ivo_root = root_id(client)
     assert client.patch(f"/api/images/{img['id']}", json={"folder_id": ivo_root}).status_code == 404
     assert client.get("/api/folders").json() == [client.get("/api/folders/root").json()]
+
+
+# ---------- Popravci prije prve predaje ----------
+
+def test_preimenovanje_ne_ponistava_zapocetu_obradu(client):
+    image = upload(client, root_id(client)).json()
+    path = f"/api/images/{image['id']}"
+    renamed = client.patch(path, json={"name": "novo.png"}).json()
+    assert renamed["updated_at"] == image["updated_at"]
+    saved = client.post(f"{path}/filters", json={
+        "action": "overwrite", "filters": ["invert"], "source_updated_at": image["updated_at"],
+    })
+    assert saved.status_code == 200
+    assert saved.json()["updated_at"] != image["updated_at"]
+
+
+def test_slika_s_previse_piksela_415(client):
+    buffer = BytesIO()
+    Image.new("1", (15000, 13000)).save(buffer, format="PNG")  # mala datoteka, ogromna slika
+    response = upload(client, root_id(client), name="bomba.png", data=buffer.getvalue())
+    assert response.status_code == 415
+
+
+def test_istovremeno_isto_ime_409_a_ne_500(client, monkeypatch):
+    # Simulira utrku: provjera imena prođe, ali drugi zahtjev je u međuvremenu zauzeo ime.
+    from app import workspace
+    root = root_id(client)
+    folder = client.post("/api/folders", json={"parent_id": root, "name": "A"}).json()
+    other = client.post("/api/folders", json={"parent_id": root, "name": "B"}).json()
+    first = upload(client, root, name="a.png").json()
+    second = upload(client, root, name="b.png").json()
+    monkeypatch.setattr(workspace, "name_taken_folder", lambda *a, **k: False)
+    monkeypatch.setattr(workspace, "name_taken_image", lambda *a, **k: False)
+
+    assert client.post("/api/folders", json={"parent_id": root, "name": "A"}).status_code == 409
+    assert client.patch(f"/api/folders/{other['id']}", json={"name": "A"}).status_code == 409
+    assert client.patch(f"/api/images/{second['id']}", json={"name": "a.png"}).status_code == 409
+    assert client.get(f"/api/folders/{folder['id']}").status_code == 200
+    assert first["name"] == "a.png"

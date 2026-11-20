@@ -10,7 +10,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Response, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from PIL import Image
@@ -196,6 +196,15 @@ def unique_image_name(db: Session, folder_id: int, name: str) -> str:
         i += 1
         
 
+def commit_or_conflict(db: Session, message: str) -> None:
+    """Commit; ako istovremeni zahtjev zauzme isto ime, vraća 409 umjesto 500."""
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise HTTPException(409, message) from exc
+
+
 def store_image(db: Session, folder: Folder, name: str, data: bytes) -> ImageFile:
     """Provjeri i spremi sliku u mapu. Koristi se za upload i za početne slike."""
     if len(data) == 0:
@@ -265,7 +274,7 @@ def create_folder(body: FolderCreate, user: User = Depends(get_current_user), db
         raise HTTPException(409, "Mapa s tim imenom već postoji.")
     folder = Folder(owner_id=user.id, parent_id=parent.id, name=name)
     db.add(folder)
-    db.commit()
+    commit_or_conflict(db, "Mapa s tim imenom već postoji.")
     db.refresh(folder)
     return folder
 
@@ -288,7 +297,7 @@ def update_folder(folder_id: int, body: FolderUpdate, user: User = Depends(get_c
         raise HTTPException(409, "Mapa s tim imenom već postoji.")
 
     folder.name, folder.parent_id = new_name, new_parent
-    db.commit()
+    commit_or_conflict(db, "Mapa s tim imenom već postoji.")
     db.refresh(folder)
     return folder
 
@@ -423,6 +432,7 @@ def filter_image(
     new_path = storage.save(result, image.format)
     image.file_path = new_path
     image.size_bytes = len(result)
+    image.updated_at = func.now()  # mijenja se samo pri promjeni sadržaja (models.py)
     try:
         db.commit()
     except Exception:
@@ -444,7 +454,7 @@ def update_image(image_id: int, body: ImageUpdate, user: User = Depends(get_curr
     if name_taken_image(db, target, name, exclude=image.id):
         raise HTTPException(409, "Slika s tim imenom već postoji u odredišnoj mapi.")
     image.name, image.folder_id = name, target
-    db.commit()
+    commit_or_conflict(db, "Slika s tim imenom već postoji u odredišnoj mapi.")
     db.refresh(image)
     return image
 

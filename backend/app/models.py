@@ -83,8 +83,11 @@ class ImageFile(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+    # Vrijeme zadnje promjene SADRŽAJA slike (filteri). Namjerno bez onupdate:
+    # preimenovanje i premještanje ne mijenjaju sliku, pa ne smiju poništiti
+    # započetu obradu (provjera source_updated_at) ni ponovno dohvaćati sličice.
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True), server_default=func.now()
     )
 
 
