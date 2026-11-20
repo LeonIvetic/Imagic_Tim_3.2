@@ -104,7 +104,7 @@ Napomena: Entiteti su u dijagramu imenovani u jednini, jednako kao klase u kodu 
 | Što ako se izvorna slika prepiše? | Prepisana slika prikazuje se i u objavi. | Objava upućuje na isti zapis `ImageFile`. |
 | Smije li ista slika biti u više objava? | Da (na `Post.image_id` nema ograničenja jedinstvenosti). | Zahtjevi to ne ograničavaju. |
 | Što ako autor objavu postavi kao privatnu, a drugi je korisnik ima u favoritima? | Zapis favorita ostaje, ali se objava ne prikazuje dok je privatna. | Ako autor objavu opet učini javnom, vraća se među favorite. |
-| Kako se bilježi izmjena? | `ImageFile` i `Post` imaju `updated_at`, koji se automatski postavlja pri svakoj izmjeni zapisa. | Prepisivanje izvorne slike (F-009) i uređivanje objave (F-011) mijenjaju postojeće zapise. |
+| Kako se bilježi izmjena? | `Post.updated_at` automatski se postavlja pri svakoj izmjeni zapisa. `ImageFile.updated_at` mijenja se samo kad se promijeni sadržaj slike (prepisivanje filtrom), a ne pri preimenovanju ili premještanju, pa služi i kao inačica slike za provjeru istovremenih izmjena. | Prepisivanje izvorne slike (F-009) i uređivanje objave (F-011) mijenjaju postojeće zapise. |
 | Postoje li tablice za lozinke ili sesije? | Ne. | Prijavu obavlja Auth0, a backend provjerava izdani token (NF-01). |
 
 **Ograničenja koja dijagram ne prikazuje**
