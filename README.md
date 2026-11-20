@@ -14,11 +14,12 @@ Imagic je namijenjen korisnicima koji žele jednostavno obraditi rasterske slike
 
 - Prijava putem Auth0 (OAuth 2.0); pri prvoj prijavi korisnik dobiva korijensku mapu i 3 početne slike s Artic API-ja (ako API nije dostupan, koriste se ugrađene slike).
 - Privatna radna okolina: ugniježđene mape (stvaranje, preimenovanje, brisanje), upload i download slika u formatima JPEG, PNG, TIFF i WebP (do 10 MB), preimenovanje, premještanje i brisanje slika, prikaz slike (TIFF se za prikaz pretvara u PNG).
+- Obrada slika: 5 filtara (grayscale, invert, pixelate, blur, derivative) koji se mogu primjenjivati uzastopno, uz pregled rezultata, poništavanje zadnjeg filtra te spremanje rezultata kao nove slike ili prepisivanje izvorne.
 - Javna stranica: uređivanje profila (korisničko ime, ime za prikaz, opis, URL slike) te stvaranje, uređivanje i brisanje postova s oznakom javan/privatan.
 
 **U izradi**
 
-- Obrada slika: filtri, morfološki operatori, geometrijske transformacije i segmentacija; rezultat se sprema kao nova datoteka ili prepisuje original. Ostvareno je 5 filtara (grayscale, invert, pixelate, blur, derivative); morfološki operatori, geometrijske transformacije i segmentacija su u izradi.
+- Obrada slika: morfološki operatori, geometrijske transformacije i segmentacija.
 - Pregled javnih stranica drugih korisnika, favoriti te preuzimanje tuđih slika lokalno ili u svoju radnu okolinu.
 - Galerija i pretraga djela s Artic API-ja.
 
@@ -27,6 +28,8 @@ Za potpuni opseg, zahtjeve, oblikovanje i dokaze ispitivanja pogledajte [docs](d
 ## Postavljanje (engl. deployment)
 
 **Javno dostupna aplikacija:** <https://imagictim32-production.up.railway.app>
+
+**Isprobajte:** prijavite se i otvorite jednu od početnih slika u radnoj okolini, primijenite nekoliko filtara i spremite rezultat kao novu sliku; zatim je na stranici „Moj profil” objavite kao javni post.
 
 **Platforma:** [Railway](https://railway.com). Frontend i backend postavljeni su kao jedan Docker servis (FastAPI poslužuje i API i izgrađeni React), uz PostgreSQL bazu i volume za slike. Svaki merge na `master` automatski pokreće novo postavljanje.
 
@@ -75,10 +78,10 @@ Nakon svake promjene u `.env` server treba ponovno pokrenuti jer se `.env` čita
 | Tehnologija ili alat | Uloga u ovom projektu | Razlog uporabe ili važno ograničenje |
 |----------------------|-----------------------|--------------------------------------|
 | React + JavaScript | Korisničko sučelje: radna okolina, prikaz slike i alati za obradu, javne stranice. | Odluka tima; SPA koja komunicira s backendom preko REST API-ja. |
-| FastAPI (Python) | Poslužiteljski API: korisnici, datoteke, mape, postovi, favoriti. | Odluka tima; REST API prema frontendu. |
+| FastAPI (Python) | Poslužiteljski API: korisnici, mape, slike, obrada slika i postovi. | Odluka tima; REST API prema frontendu. |
 | Auth0 (OAuth 2.0) | Prijava i registracija korisnika. | Zahtjev projektnog zadatka; aplikacija ne pohranjuje lozinke. |
-| Pillow (i po potrebi OpenCV) | Prepoznavanje formata učitanih slika, pretvaranje TIFF-a u PNG za prikaz; filtri (ostvareni); morfologija, geometrija i segmentacija (u izradi). | Odluka tima; obrada slika izvodi se na backendu. |
-| PostgreSQL + SQLAlchemy + Alembic | Korisnici, mape, datoteke, postovi, favoriti; migracije sheme. | Odluka tima; relacijska baza za povezane podatke korisnika. |
+| Pillow | Prepoznavanje formata učitanih slika, pretvaranje TIFF-a u PNG za prikaz i 5 filtara; morfologija, geometrija i segmentacija su u izradi. | Odluka tima; obrada slika izvodi se na backendu. |
+| PostgreSQL + SQLAlchemy + Alembic | Korisnici, mape, slike i postovi (tablice za favorite već postoje); migracije sheme. | Odluka tima; relacijska baza za povezane podatke korisnika. |
 | Artic API | Dohvat 3 početne testne slike pri prvoj prijavi. | Vanjska ovisnost; ako API nije dostupan, koriste se ugrađene slike. |
 | Docker + Railway | Javno postavljanje: jedan Docker image (FastAPI + izgrađeni React), PostgreSQL i volume za slike. | Automatsko postavljanje pri svakom mergeu na `master`; vidi [docs/6.3](docs/6-Postavljanje-instalacija-i-konfiguracija.md#63-javno-postavljanje-i-administracija). |
 
@@ -98,7 +101,7 @@ Nakon svake promjene u `.env` server treba ponovno pokrenuti jer se `.env` čita
 
 Zadaci i nedostaci vode se u [GitHub Issues](https://github.com/LeonIvetic/Imagic_Tim_3.2/issues). Promjene koda ulaze preko Pull Requesta uz pregled najmanje jednog člana tima; svaki PR veže se na Issue. Bilješke sa sastanaka nalaze se u [docs/meeting-notes](docs/meeting-notes/).
 
-**Status licence:** Nije dodijeljena
+**Status licence:** Projektu nije dodijeljena licenca koja dopušta javnu ponovnu uporabu koda.
 
 Kod trećih strana, skupovi podataka, slike i ikone zadržavaju vlastite licence i uvjete uporabe.
 
@@ -106,7 +109,7 @@ Kod trećih strana, skupovi podataka, slike i ikone zadržavaju vlastite licence
 
 Ovaj projekt slijedi FER-ova [pravila o primjerenoj uporabi umjetne inteligencije](https://www.fer.unizg.hr/_download/repository/Policy%20on%20the%20appropriate%20use%20of%20artificial%20intelligence%20at%20the%20faculty%20of%20electrical%20engineering%20and%20computing%5B1%5D.pdf).
 
-**Izjava:** Za izradu nacrta strukture repozitorija i početnih dokumenata (README, `docs/`, popis početnih Issuea) korišten je alat Claude (Anthropic). Isti alat korišten je i za izradu CSS-a i izgleda početne (login) stranice frontenda, za dio prijave na backendu, za konfiguraciju javnog postavljanja (Docker, Railway) te za pregled i usklađivanje dokumentacije s kodom. Detaljan zapis nalazi se u [docs/Home.md](docs/Home.md#izjava-o-uporabi-umjetne-inteligencije).
+**Izjava:** Za izradu nacrta strukture repozitorija i početnih dokumenata (README, `docs/`, popis početnih Issuea) korišten je alat Claude (Anthropic). Isti alat korišten je i za izradu CSS-a i izgleda početne (login) stranice frontenda, za dio prijave na backendu, za konfiguraciju javnog postavljanja (Docker, Railway), kao opća pomoć pri pisanju koda i otklanjanju grešaka (debugiranju) te za pregled i usklađivanje dokumentacije s kodom. Detaljan zapis nalazi se u [docs/Home.md](docs/Home.md#izjava-o-uporabi-umjetne-inteligencije).
 
 ## Kodeks ponašanja i podrška
 

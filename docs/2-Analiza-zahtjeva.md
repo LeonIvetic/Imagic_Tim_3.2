@@ -66,7 +66,7 @@
 | C-04 | Ograničenje | Minimalni opseg obrade: 5 filtara, 4 morfološka operatora, 3 geometrijske transformacije, 1 algoritam segmentacije; najmanje 3 formata datoteka. | Zadatak | Ostvariti sve navedene alate; provjeriti u ispitivanju. |
 | AS-01 | Pretpostavka | Obrada slika izvodi se na backendu (Pillow/OpenCV). | Odluka tima | Odluka zabilježena u 2.5 i docs/4. |
 | AS-02 | Pretpostavka | Za prijavu je dovoljan jedan pružatelj identiteta; tim koristi Auth0 (OAuth 2.0). | Odluka tima | Odluka zabilježena u 2.5 i docs/4. |
-| AS-03 | Pretpostavka | Artic API dostupan je za dohvat početnih slika i za Artic galeriju (F-017); ako nije, za početne slike koriste se ugrađene slike. | Procjena tima | Ostvareno za početne slike: ugrađene slike nalaze se u `backend/app/seed/`, a prijava ne pada ako Artic ne odgovori (test `test_bez_artica_koriste_se_ugradene_slike`). Ponašanje galerije kad Artic nije dostupan opisano je u UC-011 (A2). |
+| AS-03 | Pretpostavka | Artic API dostupan je za dohvat početnih slika i za Artic galeriju (F-017); ako nije, za početne slike koriste se ugrađene slike. | Procjena tima | Ostvareno za početne slike: ugrađene slike nalaze se u `backend/app/seed/`, a prijava ne pada ako Artic ne odgovori (test `test_bez_artica_koriste_se_ugradene_slike`). Ponašanje galerije kad Artic nije dostupan opisano je u UC-011 (2a). |
 | AS-04 | Pretpostavka | Slike se pohranjuju na disku poslužitelja (Railway volume), a ne na vanjskom servisu za pohranu. | Dogovor s asistentom | Vrijedi do prve predaje; baza čuva samo putanju do datoteke, pa je kasniji prelazak na vanjsku pohranu ograničen na `backend/app/storage.py`. |
 
 ## 2.5 Značajne promjene zahtjeva
